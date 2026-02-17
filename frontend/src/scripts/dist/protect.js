@@ -1,0 +1,9 @@
+import { verifyToken } from "../dist/Auth.js";
+document.addEventListener('DOMContentLoaded', async () => {
+    const isTokenIsStillValid = await verifyToken();
+    console.log(isTokenIsStillValid);
+    if (!isTokenIsStillValid) {
+        window.location.href = './Auth.html';
+    }
+});
+//# sourceMappingURL=protect.js.map
