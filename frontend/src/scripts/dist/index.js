@@ -11,6 +11,7 @@ import { loadComponent } from "./layout.js";
 import { sidebar } from "./sidebar.js";
 document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, void 0, function* () {
     yield loadComponent("sidebar-placeholder", "/frontend/src/components/sidebar.html");
+    yield loadComponent("dashboard-placeholder", "/frontend/src/pages/Dashboard.html");
     sidebar();
 }));
 //# sourceMappingURL=index.js.map
