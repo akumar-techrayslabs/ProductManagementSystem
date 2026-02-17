@@ -5,5 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadComponent("sidebar-placeholder", "/frontend/src/components/sidebar.html");
   await loadComponent("dashboard-placeholder", "/frontend/src/pages/Dashboard.html");
+  await loadComponent("sidebar-navbar", "/frontend/src/components/navbar.html");
   sidebar();
 });

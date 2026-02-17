@@ -12,6 +12,7 @@ import { sidebar } from "./sidebar.js";
 document.addEventListener("DOMContentLoaded", () => __awaiter(void 0, void 0, void 0, function* () {
     yield loadComponent("sidebar-placeholder", "/frontend/src/components/sidebar.html");
     yield loadComponent("dashboard-placeholder", "/frontend/src/pages/Dashboard.html");
+    yield loadComponent("sidebar-navbar", "/frontend/src/components/navbar.html");
     sidebar();
 }));
 //# sourceMappingURL=index.js.map
