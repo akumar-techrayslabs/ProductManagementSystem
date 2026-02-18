@@ -15,6 +15,7 @@ async function showAlert():Promise<void> {
         window.location.href= "./Dashboard.html"
     });
 }
+
 function showError() {
     Swal.fire({
         title: 'Invalid Credentials or something went wrong!',
