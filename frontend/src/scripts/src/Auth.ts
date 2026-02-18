@@ -13,7 +13,7 @@ export async function loginSuperAdmin(email:string, password:string)
     if(email === SUPER_ADMIN.email && password === SUPER_ADMIN.password)
     {
     
-        const token = await new  SignJWT({role:"superadmin", email})
+        const token = await new SignJWT({role:"superadmin", email})
         .setProtectedHeader({alg:"HS256"})
         .setExpirationTime("1d")
         .sign(SECRET_KEY);

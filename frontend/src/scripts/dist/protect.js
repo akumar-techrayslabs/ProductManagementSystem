@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isTokenIsStillValid = await verifyToken();
     console.log(isTokenIsStillValid);
     if (!isTokenIsStillValid) {
-        window.location.href = './Auth.html';
+        window.location.href = '/frontend/src/pages/Auth.html';
     }
 });
 //# sourceMappingURL=protect.js.map
