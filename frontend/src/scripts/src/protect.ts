@@ -7,6 +7,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     
     if(!isTokenIsStillValid)
     {
-        window.location.href = './Auth.html'
+        window.location.href = '/frontend/src/pages/Auth.html'
     }
 })
