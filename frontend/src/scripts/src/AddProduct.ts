@@ -50,14 +50,14 @@ form.addEventListener("submit", (e) => {
   const reorder_level = 0;
 
   
-  const skuExists = products.some(
-    (p) => p.organization_id === organization_id && p.sku === sku,
-  );
+//   const skuExists = products.some(
+//     (p) => p.organization_id === organization_id && p.sku === sku,
+//   );
 
-  if (skuExists) {
-    alert("SKU already exists for this organization");
-    return;
-  }
+//   if (skuExists) {
+//     alert("SKU already exists for this organization");
+//     return;
+//   }
 
   const productId = Date.now();
 

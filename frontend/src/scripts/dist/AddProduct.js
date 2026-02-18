@@ -9,11 +9,13 @@ form.addEventListener("submit", (e) => {
     const sku = document.getElementById("product-sku").value.trim();
     const category_id = Number(document.getElementById("product-category").value) || null;
     const reorder_level = 0;
-    const skuExists = products.some((p) => p.organization_id === organization_id && p.sku === sku);
-    if (skuExists) {
-        alert("SKU already exists for this organization");
-        return;
-    }
+    //   const skuExists = products.some(
+    //     (p) => p.organization_id === organization_id && p.sku === sku,
+    //   );
+    //   if (skuExists) {
+    //     alert("SKU already exists for this organization");
+    //     return;
+    //   }
     const productId = Date.now();
     const newProduct = {
         id: productId,
