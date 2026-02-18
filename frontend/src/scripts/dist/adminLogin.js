@@ -1,4 +1,4 @@
-import { loginSuperAdmin } from "../dist/Auth.js";
+import { loginSuperAdmin, logoutAdmin } from "../dist/Auth.js";
 const adminLoginForm = document.querySelector("form");
 console.log("hello kajri");
 adminLoginForm.addEventListener("submit", async (e) => {
@@ -14,5 +14,9 @@ adminLoginForm.addEventListener("submit", async (e) => {
     else {
         alert(result.message);
     }
+});
+const logoutbtn = document.getElementById("logout");
+logoutbtn.addEventListener("click", () => {
+    logoutAdmin();
 });
 //# sourceMappingURL=adminLogin.js.map

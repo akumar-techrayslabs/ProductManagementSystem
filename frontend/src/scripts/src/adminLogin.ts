@@ -1,4 +1,4 @@
-import { loginSuperAdmin } from "../dist/Auth.js";
+import { loginSuperAdmin,logoutAdmin } from "../dist/Auth.js";
 
 const adminLoginForm = document.querySelector("form") as HTMLFormElement;
 console.log("hello kajri");
@@ -21,4 +21,10 @@ adminLoginForm.addEventListener("submit",async (e)=>{
     
     
 
+})
+
+const logoutbtn = document.getElementById("logout") as HTMLButtonElement;
+
+logoutbtn.addEventListener("click",()=>{
+    logoutAdmin();
 })

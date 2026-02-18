@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>navbar</title>
     <link rel="stylesheet" href="/frontend/src/styles/output.css">
+    <script type="module" src="/frontend//src/scripts/dist/adminLogin.js"></script>
 
 </head>
 <body>
@@ -13,20 +14,21 @@
   <div class="flex items-center gap-4">
     
     <!-- Login Button -->
-    <a 
-      href="../pages/Auth.html"
+    <!-- <a 
+      href="/frontend/src/pages/Auth.html"
       class="px-5 py-2 text-sm font-medium hover:bg-gray-50 hover:rounded-lg hover:shadow-md text-gray-700 hover:text-black transition duration-200"
     >
       Login
-    </a>
+    </a> -->
 
     <!-- Signup Button -->
-    <a 
-      href="/signup.html"
-      class="px-5 py-2 text-sm font-medium bg-teal-700 text-white rounded-lg hover:bg-gray-800 transition duration-200 shadow-md"
+    <button
+     
+      class="px-5 py-2 text-sm font-medium bg-teal-700 text-white rounded-lg hover:bg-gray-800 transition duration-200 shadow-md cursor-pointer"
+      id="logout"
     >
-      Sign Up
-    </a>
+     Logout
+    </button>
 
   </div>
 

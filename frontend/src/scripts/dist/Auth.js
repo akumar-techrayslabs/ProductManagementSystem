@@ -38,6 +38,7 @@ export async function verifyToken() {
     }
 }
 export function logoutAdmin() {
+    console.log("logout successfully");
     localStorage.removeItem("token");
 }
 //# sourceMappingURL=Auth.js.map
