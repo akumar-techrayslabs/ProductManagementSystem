@@ -205,7 +205,7 @@ function render() {
         </td>
       </tr>
 
-      <tr id="${rowId}" class="hidden bg-teal-100">
+      <tr id="${rowId}" class="hidden ">
         <td colspan="8">
           ${renderItemsTable(po.items)}
         </td>
