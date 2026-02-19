@@ -150,9 +150,11 @@ if(editingCustomerId){
 
   customerOrders[index] = {
     ...customerOrders[index],
+    id:editingCustomerId,
     customer_id,
     warehouse_id,
     status_id,
+    created_by,
     total_amount: grandTotal,
     items
   };
