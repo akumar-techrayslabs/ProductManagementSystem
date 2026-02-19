@@ -3,7 +3,7 @@ import {verifyToken } from "../dist/Auth.js";
 
 document.addEventListener('DOMContentLoaded', async ()=>{
     const isTokenIsStillValid = await verifyToken();
-    console.log(isTokenIsStillValid);
+    // console.log(isTokenIsStillValid);
     
     if(!isTokenIsStillValid)
     {
