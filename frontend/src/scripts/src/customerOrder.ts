@@ -40,7 +40,7 @@ function showWarning(message: string) {
 
 (window as any).showSuccess = showSuccess;
 (window as any).showWarning = showWarning;
-
+let editingCustomerId: number | null = null;
 let items: CustomerOrderItem[] = [];
 let itemId = 1;
 
@@ -104,8 +104,17 @@ function renderItems() {
         <td>${item.quantity}</td>
         <td>${item.unit_price}</td>
         <td>${item.total_amount.toFixed(2)}</td>
+        <td>
+        <button onclick="removeItem(${item.id})" class=" text-white   cursor-pointer">
+       <i class="fa-solid fa-xmark" style="color: #FF0000;"></i></button>
+        </td>
       </tr>
     `;
+    (window as any).removeItem = function(id: number) {
+  items = items.filter(item => item.id !== id);
+  renderItems();
+};
+
   });
 
   grandTotalEl.textContent = grandTotal.toFixed(2);
@@ -133,6 +142,24 @@ saveBtn.addEventListener("click", (e) => {
 
   const customerOrders: CustomerOrder[] =
     JSON.parse(localStorage.getItem("customerOrders") || "[]");
+if(editingCustomerId){
+
+  const index = customerOrders.findIndex(
+    order => order.id === editingCustomerId
+  );
+
+  customerOrders[index] = {
+    ...customerOrders[index],
+    customer_id,
+    warehouse_id,
+    status_id,
+    total_amount: grandTotal,
+    items
+  };
+
+  editingCustomerId = null;
+
+} else {
 
   const newOrder: CustomerOrder = {
     id: Date.now(),
@@ -141,12 +168,27 @@ saveBtn.addEventListener("click", (e) => {
     status_id,
     total_amount: grandTotal,
     created_by,
-    items,
+    items
   };
 
   customerOrders.push(newOrder);
+}
+
+
+
+
 
   localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+    items = [];
+itemId = 1;
+renderItems();
+
+(document.getElementById("customer_id") as HTMLSelectElement).value = "";
+
+customer_add_section.classList.add("hidden");
+customer_list.classList.remove("hidden");
+
+renderCustomerOrders();
 
   showSuccess();
 });
@@ -226,6 +268,18 @@ function renderCustomerOrders() {
             <i class="fa-solid fa-angle-down"></i>
           </button>
         </td>
+        <td>
+         <button onclick="editCustomerOrder(${order.id})"
+    class=" text-white px-2 py-3 rounded">
+   <i class="fa-solid fa-pen-to-square cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
+    <td>
+  <button onclick="deleteCustomerOrder(${order.id})"
+    class=" text-white px-2 py-3 rounded">
+      <i class="fa-solid fa-trash cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
       </tr>
 
       <tr id="${rowId}" class="hidden ">
@@ -236,6 +290,58 @@ function renderCustomerOrders() {
     `;
   });
 }
+
+(window as any).deleteCustomerOrder = function(id: number) {
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This will delete the Customer Order",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then((result:any) => {
+
+    if(result.isConfirmed){
+
+      let customerOrders: CustomerOrder[] =
+        JSON.parse(localStorage.getItem("customerOrders") || "[]");
+
+      customerOrders = customerOrders.filter(order => order.id !== id);
+
+      localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+
+      renderCustomerOrders();
+
+    }
+
+  });
+
+};
+
+(window as any).editCustomerOrder = function(id: number) {
+
+  const customerOrders: CustomerOrder[] =
+    JSON.parse(localStorage.getItem("customerOrders") || "[]");
+
+  const order = customerOrders.find(o => o.id === id);
+
+  if(!order) return;
+
+  editingCustomerId = id;
+
+  customer_add_section.classList.remove("hidden");
+  customer_list.classList.add("hidden");
+
+  (document.getElementById("customer_id") as HTMLSelectElement).value =
+    order.customer_id.toString();
+
+  items = [...order.items];
+// this is so that no items can have the same id after adding new items 
+  itemId = Math.max(...items.map(i => i.id), 0) + 1;
+
+  renderItems();
+};
+
 
 function renderItemsTable(items: CustomerOrderItem[]) {
 

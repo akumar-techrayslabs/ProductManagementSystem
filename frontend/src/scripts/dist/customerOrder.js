@@ -18,6 +18,7 @@ function showWarning(message) {
 }
 window.showSuccess = showSuccess;
 window.showWarning = showWarning;
+let editingCustomerId = null;
 let items = [];
 let itemId = 1;
 const addItemsForm = document.getElementById("product-items-form");
@@ -65,8 +66,16 @@ function renderItems() {
         <td>${item.quantity}</td>
         <td>${item.unit_price}</td>
         <td>${item.total_amount.toFixed(2)}</td>
+        <td>
+        <button onclick="removeItem(${item.id})" class=" text-white   cursor-pointer">
+       <i class="fa-solid fa-xmark" style="color: #FF0000;"></i></button>
+        </td>
       </tr>
     `;
+        window.removeItem = function (id) {
+            items = items.filter(item => item.id !== id);
+            renderItems();
+        };
     });
     grandTotalEl.textContent = grandTotal.toFixed(2);
 }
@@ -86,17 +95,38 @@ saveBtn.addEventListener("click", (e) => {
     }
     const grandTotal = Number(grandTotalEl.textContent);
     const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
-    const newOrder = {
-        id: Date.now(),
-        customer_id,
-        warehouse_id,
-        status_id,
-        total_amount: grandTotal,
-        created_by,
-        items,
-    };
-    customerOrders.push(newOrder);
+    if (editingCustomerId) {
+        const index = customerOrders.findIndex(order => order.id === editingCustomerId);
+        customerOrders[index] = {
+            ...customerOrders[index],
+            customer_id,
+            warehouse_id,
+            status_id,
+            total_amount: grandTotal,
+            items
+        };
+        editingCustomerId = null;
+    }
+    else {
+        const newOrder = {
+            id: Date.now(),
+            customer_id,
+            warehouse_id,
+            status_id,
+            total_amount: grandTotal,
+            created_by,
+            items
+        };
+        customerOrders.push(newOrder);
+    }
     localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+    items = [];
+    itemId = 1;
+    renderItems();
+    document.getElementById("customer_id").value = "";
+    customer_add_section.classList.add("hidden");
+    customer_list.classList.remove("hidden");
+    renderCustomerOrders();
     showSuccess();
 });
 function loadProductsForDropdown() {
@@ -156,6 +186,18 @@ function renderCustomerOrders() {
             <i class="fa-solid fa-angle-down"></i>
           </button>
         </td>
+        <td>
+         <button onclick="editCustomerOrder(${order.id})"
+    class=" text-white px-2 py-3 rounded">
+   <i class="fa-solid fa-pen-to-square cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
+    <td>
+  <button onclick="deleteCustomerOrder(${order.id})"
+    class=" text-white px-2 py-3 rounded">
+      <i class="fa-solid fa-trash cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
       </tr>
 
       <tr id="${rowId}" class="hidden ">
@@ -166,6 +208,37 @@ function renderCustomerOrders() {
     `;
     });
 }
+window.deleteCustomerOrder = function (id) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will delete the Customer Order",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+            customerOrders = customerOrders.filter(order => order.id !== id);
+            localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+            renderCustomerOrders();
+        }
+    });
+};
+window.editCustomerOrder = function (id) {
+    const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+    const order = customerOrders.find(o => o.id === id);
+    if (!order)
+        return;
+    editingCustomerId = id;
+    customer_add_section.classList.remove("hidden");
+    customer_list.classList.add("hidden");
+    document.getElementById("customer_id").value =
+        order.customer_id.toString();
+    items = [...order.items];
+    // this is so that no items can have the same id after adding new items 
+    itemId = Math.max(...items.map(i => i.id), 0) + 1;
+    renderItems();
+};
 function renderItemsTable(items) {
     const products = JSON.parse(localStorage.getItem("products") || "[]");
     let html = `
