@@ -16,6 +16,7 @@ function showSuccess() {
     icon: "success",
     confirmButtonText: "OK",
   }).then(()=>{
+   window.location.reload();
     form.reset();
   });
 }
@@ -28,7 +29,10 @@ console.log("User Management page");
 let users: User[] = JSON.parse(
   localStorage.getItem("users") || "[]",
 );
-
+  const table = document.querySelector(
+  "#userTable",
+) as HTMLTableSectionElement;
+  let sub_form = document.getElementById("customer-form") as HTMLElement;
 
 const form = document.getElementById("user-form") as HTMLFormElement;
 
@@ -51,7 +55,7 @@ form.addEventListener("submit", (e) => {
     ) || null;
 
 
-  
+
 
   const userId = Date.now();
 
@@ -68,6 +72,10 @@ form.addEventListener("submit", (e) => {
 
   users.push(newUser);
   localStorage.setItem("users", JSON.stringify(users));
+    
+
+  form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
   showSuccess();
 })
 
@@ -100,3 +108,45 @@ window.addEventListener("DOMContentLoaded",()=>{
 
     loadRolesForDropdown();
 })
+
+
+
+const btn = document.getElementById("add-btn") as HTMLDivElement;
+console.log("btn", btn);
+
+btn.addEventListener("click", () => {
+  console.log("clicked");
+  
+
+  form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
+});
+function renderSuppliers() {
+    const tableBody = document.querySelector(
+  "#userTable tbody",
+) as HTMLTableSectionElement;
+  tableBody.innerHTML = "";
+let roles = JSON.parse(
+  localStorage.getItem("roles") || "[]",
+);
+users.forEach((user, index) => {
+    const role = roles.find((c:any) => c.id == user.role_id);
+    console.log("role",role);
+    
+    tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${user.full_name}</td>
+                <td class="p-2">${user.email}</td>
+                <td class="p-2">${user.phone_no}</td>
+                <td class="p-2">${user.password}</td>
+                <td class="p-2">${role.name}</td>
+                <td class="p-2">${user.is_active}</td>
+
+               
+            </tr>
+        `;
+  });
+}
+
+renderSuppliers();

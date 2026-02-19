@@ -8,6 +8,8 @@ function showSuccess() {
 }
 window.showSuccess = showSuccess;
 const organization_id = 1;
+const table = document.querySelector("#supplierTable");
+let sub_form = document.getElementById("customer-form");
 const STORAGE_KEY = "suppliers";
 let suppliers = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 const form = document.getElementById("supplier-form");
@@ -43,21 +45,29 @@ form.addEventListener("submit", (e) => {
     // renderCategories();
     form.reset();
 });
+const btn = document.getElementById("add-btn");
+console.log("btn", btn);
+btn.addEventListener("click", () => {
+    console.log("clicked");
+    form.classList.toggle("hidden");
+    table.classList.toggle("hidden");
+});
+function renderSuppliers() {
+    const tableBody = document.querySelector("#supplierTable tbody");
+    tableBody.innerHTML = "";
+    suppliers.forEach((sup, index) => {
+        tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${sup.name}</td>
+                <td class="p-2">${sup.email}</td>
+                <td class="p-2">${sup.is_active}</td>
+
+               
+            </tr>
+        `;
+    });
+}
+renderSuppliers();
 export {};
-// function renderCategories() {
-//     tableBody.innerHTML = "";
-//     categories.forEach(cat => {
-//         tableBody.innerHTML += `
-//             <tr>
-//                 <td class="border p-2">${cat.id}</td>
-//                 <td class="border p-2">${cat.organization_id}</td>
-//                 <td class="border p-2">${cat.name}</td>
-//                 <td class="border p-2">
-//                     ${cat.is_active ? "Active" : "Inactive"}
-//                 </td>
-//             </tr>
-//         `;
-//     });
-// }
-// renderCategories();
 //# sourceMappingURL=addSuppliers.js.map

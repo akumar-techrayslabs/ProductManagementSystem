@@ -17,6 +17,10 @@ function showSuccess() {
 (window as any).showSuccess = showSuccess
 
 const organization_id = 1;
+const table = document.querySelector(
+  "#supplierTable",
+) as HTMLTableSectionElement;
+  let sub_form = document.getElementById("customer-form") as HTMLElement;
 
 const STORAGE_KEY = "suppliers";
 
@@ -78,21 +82,35 @@ form.addEventListener("submit", (e) => {
 });
 
 
-// function renderCategories() {
-//     tableBody.innerHTML = "";
+const btn = document.getElementById("add-btn") as HTMLDivElement;
+console.log("btn", btn);
 
-//     categories.forEach(cat => {
-//         tableBody.innerHTML += `
-//             <tr>
-//                 <td class="border p-2">${cat.id}</td>
-//                 <td class="border p-2">${cat.organization_id}</td>
-//                 <td class="border p-2">${cat.name}</td>
-//                 <td class="border p-2">
-//                     ${cat.is_active ? "Active" : "Inactive"}
-//                 </td>
-//             </tr>
-//         `;
-//     });
-// }
+btn.addEventListener("click", () => {
+  console.log("clicked");
+  
 
-// renderCategories();
+  form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
+});
+function renderSuppliers() {
+    const tableBody = document.querySelector(
+  "#supplierTable tbody",
+) as HTMLTableSectionElement;
+  tableBody.innerHTML = "";
+
+  suppliers.forEach((sup, index) => {
+    tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${sup.name}</td>
+                <td class="p-2">${sup.email}</td>
+                <td class="p-2">${sup.is_active}</td>
+
+               
+            </tr>
+        `;
+  });
+}
+
+renderSuppliers();
+

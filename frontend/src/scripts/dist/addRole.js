@@ -7,11 +7,15 @@ function showSuccess() {
         text: "Role Added Successfully",
         icon: "success",
         confirmButtonText: "OK",
+    }).then(() => {
+        window.location.reload();
     });
 }
 window.showSuccess = showSuccess;
 const form = document.getElementById("role-form");
 // const tableBody = document.getElementById("category-table") as HTMLElement;
+const table = document.querySelector("#roleTable");
+let sub_form = document.getElementById("role-form");
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     console.log("roles");
@@ -34,24 +38,33 @@ form.addEventListener("submit", (e) => {
     roles.push(newRole);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
     showSuccess();
+    form.classList.toggle("hidden");
+    table.classList.toggle("hidden");
     // renderCategories();
     form.reset();
 });
+const btn = document.getElementById("add-btn");
+console.log("btn", btn);
+btn.addEventListener("click", () => {
+    console.log("clicked");
+    form.classList.toggle("hidden");
+    table.classList.toggle("hidden");
+});
+function renderSuppliers() {
+    const tableBody = document.querySelector("#roleTable tbody");
+    tableBody.innerHTML = "";
+    roles.forEach((role, index) => {
+        tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${role.name}</td>
+ 
+
+               
+            </tr>
+        `;
+    });
+}
+renderSuppliers();
 export {};
-// function renderCategories() {
-//     tableBody.innerHTML = "";
-//     categories.forEach(cat => {
-//         tableBody.innerHTML += `
-//             <tr>
-//                 <td class="border p-2">${cat.id}</td>
-//                 <td class="border p-2">${cat.organization_id}</td>
-//                 <td class="border p-2">${cat.name}</td>
-//                 <td class="border p-2">
-//                     ${cat.is_active ? "Active" : "Inactive"}
-//                 </td>
-//             </tr>
-//         `;
-//     });
-// }
-// renderCategories();
 //# sourceMappingURL=addRole.js.map

@@ -21,12 +21,17 @@ function showSuccess() {
     text: "Role Added Successfully",
     icon: "success",
     confirmButtonText: "OK",
+  }).then(()=>{
+    window.location.reload();
   });
 }
 (window as any).showSuccess = showSuccess
 const form = document.getElementById("role-form") as HTMLFormElement;
 // const tableBody = document.getElementById("category-table") as HTMLElement;
-
+const table = document.querySelector(
+  "#roleTable",
+) as HTMLTableSectionElement;
+  let sub_form = document.getElementById("role-form") as HTMLElement;
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -66,26 +71,41 @@ form.addEventListener("submit", (e) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
     
     showSuccess();
+      form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
     // renderCategories();
     form.reset();
 });
 
 
-// function renderCategories() {
-//     tableBody.innerHTML = "";
 
-//     categories.forEach(cat => {
-//         tableBody.innerHTML += `
-//             <tr>
-//                 <td class="border p-2">${cat.id}</td>
-//                 <td class="border p-2">${cat.organization_id}</td>
-//                 <td class="border p-2">${cat.name}</td>
-//                 <td class="border p-2">
-//                     ${cat.is_active ? "Active" : "Inactive"}
-//                 </td>
-//             </tr>
-//         `;
-//     });
-// }
+const btn = document.getElementById("add-btn") as HTMLDivElement;
+console.log("btn", btn);
 
-// renderCategories();
+btn.addEventListener("click", () => {
+  console.log("clicked");
+  
+
+  form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
+});
+function renderSuppliers() {
+    const tableBody = document.querySelector(
+  "#roleTable tbody",
+) as HTMLTableSectionElement;
+  tableBody.innerHTML = "";
+
+  roles.forEach((role, index) => {
+    tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${role.name}</td>
+ 
+
+               
+            </tr>
+        `;
+  });
+}
+
+renderSuppliers();
