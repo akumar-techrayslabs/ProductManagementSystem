@@ -50,7 +50,7 @@ function showWarning(message:string) {
 
 let items: PurchaseOrderItem[] = [];
 let itemId = 1;
-
+let editingId: number | null = null;
 const addItemsForm = document.getElementById("product-items-form") as HTMLFormElement;
 const saveBtn = document.getElementById("savePO")!;
 const table = document.getElementById("itemsTable")!;
@@ -118,8 +118,17 @@ function renderItems() {
         <td>${item.unitPrice}</td>
         <td>${item.tax.toFixed(2)}</td>
         <td>${item.total.toFixed(2)}</td>
+        <td>
+        <button onclick="removeItem(${item.id})" class=" text-white   cursor-pointer">
+       <i class="fa-solid fa-xmark" style="color: #FF0000;"></i></button>
+        </td>
       </tr>
     `;
+    (window as any).removeItem = function(id: number) {
+  items = items.filter(item => item.id !== id);
+  renderItems();
+};
+
   });
 
   grandTotalEl.textContent = grandTotal.toFixed(2);
@@ -153,6 +162,24 @@ saveBtn.addEventListener("click", (e) => {
 
   const purchaseOrders: PurchaseOrder[] =
     JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+    if(editingId){
+
+  const index = purchaseOrders.findIndex(po => po.id === editingId);
+
+  purchaseOrders[index] = {
+    ...purchaseOrders[index],
+    supplier_id,
+    id:editingId,
+    name,
+     status: "draft",
+     organization_id,
+    total_amount: grandTotal,
+    items
+  };
+
+  editingId = null;
+
+} else {
 
   const newPO: PurchaseOrder = {
     id: Date.now(),
@@ -165,9 +192,16 @@ saveBtn.addEventListener("click", (e) => {
   };
 
   purchaseOrders.push(newPO);
+}
+
+
 
   localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
-
+    items = [];
+  itemId = 1;
+    renderItems();
+(document.getElementById("name") as HTMLInputElement).value = "";
+(document.getElementById("supplier_id") as HTMLSelectElement).value = "";
   showSuccess()
   
 });
@@ -203,6 +237,18 @@ function render() {
            <i class="fa-solid fa-angle-down " style="color: #000;"></i>
           </button>
         </td>
+        <td>
+         <button onclick="editPurchaseOrder(${po.id})"
+    class=" text-white px-2 py-3 rounded">
+   <i class="fa-solid fa-pen-to-square cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
+    <td>
+  <button onclick="deletePurchaseOrder(${po.id})"
+    class=" text-white px-2 py-3 rounded">
+      <i class="fa-solid fa-trash cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
       </tr>
 
       <tr id="${rowId}" class="hidden ">
@@ -213,6 +259,68 @@ function render() {
     `;
   });
 }
+
+(window as any).deletePurchaseOrder = function(id: number) {
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This will delete the Purchase Order",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then((result:any) => {
+
+    if(result.isConfirmed){
+
+      let purchaseOrders: PurchaseOrder[] =
+        JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+
+      purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+
+      localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+
+      render();
+
+    }
+
+  });
+
+};
+
+(window as any).editPurchaseOrder = function(id: number) {
+
+  const purchaseOrders: PurchaseOrder[] =
+    JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+
+  const po = purchaseOrders.find(p => p.id === id);
+
+  if(!po) return;
+
+  editingId = id;
+
+
+  purchase_add_section.classList.remove("hidden");
+  purchase_list.classList.add("hidden");
+
+
+  (document.getElementById("supplier_id") as HTMLSelectElement).value =
+    po.supplier_id.toString();
+
+ 
+  (document.getElementById("name") as HTMLInputElement).value =
+    po.name;
+
+ 
+  items = [...po.items];
+
+    // this will prevent any id to be same after creating a new purchase item id 
+  itemId = Math.max(...items.map(i => i.id), 0) + 1;
+
+  renderItems();
+};
+
+
+
 
 function renderItemsTable(items: PurchaseOrderItem[]) {
 

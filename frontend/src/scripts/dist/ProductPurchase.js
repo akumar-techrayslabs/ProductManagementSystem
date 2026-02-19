@@ -20,6 +20,7 @@ window.showSuccess = showSuccess;
 window.showWarning = showWarning;
 let items = [];
 let itemId = 1;
+let editingId = null;
 const addItemsForm = document.getElementById("product-items-form");
 const saveBtn = document.getElementById("savePO");
 const table = document.getElementById("itemsTable");
@@ -69,8 +70,16 @@ function renderItems() {
         <td>${item.unitPrice}</td>
         <td>${item.tax.toFixed(2)}</td>
         <td>${item.total.toFixed(2)}</td>
+        <td>
+        <button onclick="removeItem(${item.id})" class=" text-white   cursor-pointer">
+       <i class="fa-solid fa-xmark" style="color: #FF0000;"></i></button>
+        </td>
       </tr>
     `;
+        window.removeItem = function (id) {
+            items = items.filter(item => item.id !== id);
+            renderItems();
+        };
     });
     grandTotalEl.textContent = grandTotal.toFixed(2);
 }
@@ -93,17 +102,38 @@ saveBtn.addEventListener("click", (e) => {
     }
     const grandTotal = Number(grandTotalEl.textContent);
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-    const newPO = {
-        id: Date.now(),
-        organization_id,
-        supplier_id,
-        name,
-        status: "draft",
-        total_amount: grandTotal,
-        items
-    };
-    purchaseOrders.push(newPO);
+    if (editingId) {
+        const index = purchaseOrders.findIndex(po => po.id === editingId);
+        purchaseOrders[index] = {
+            ...purchaseOrders[index],
+            supplier_id,
+            id: editingId,
+            name,
+            status: "draft",
+            organization_id,
+            total_amount: grandTotal,
+            items
+        };
+        editingId = null;
+    }
+    else {
+        const newPO = {
+            id: Date.now(),
+            organization_id,
+            supplier_id,
+            name,
+            status: "draft",
+            total_amount: grandTotal,
+            items
+        };
+        purchaseOrders.push(newPO);
+    }
     localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+    items = [];
+    itemId = 1;
+    renderItems();
+    document.getElementById("name").value = "";
+    document.getElementById("supplier_id").value = "";
     showSuccess();
 });
 const tableBody = document.querySelector("#purchaseTable tbody");
@@ -128,6 +158,18 @@ function render() {
            <i class="fa-solid fa-angle-down " style="color: #000;"></i>
           </button>
         </td>
+        <td>
+         <button onclick="editPurchaseOrder(${po.id})"
+    class=" text-white px-2 py-3 rounded">
+   <i class="fa-solid fa-pen-to-square cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
+    <td>
+  <button onclick="deletePurchaseOrder(${po.id})"
+    class=" text-white px-2 py-3 rounded">
+      <i class="fa-solid fa-trash cursor-pointer" style="color: #1e2939;"></i>
+  </button>
+    </td>
       </tr>
 
       <tr id="${rowId}" class="hidden ">
@@ -138,6 +180,39 @@ function render() {
     `;
     });
 }
+window.deletePurchaseOrder = function (id) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will delete the Purchase Order",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+            purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+            localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+            render();
+        }
+    });
+};
+window.editPurchaseOrder = function (id) {
+    const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+    const po = purchaseOrders.find(p => p.id === id);
+    if (!po)
+        return;
+    editingId = id;
+    purchase_add_section.classList.remove("hidden");
+    purchase_list.classList.add("hidden");
+    document.getElementById("supplier_id").value =
+        po.supplier_id.toString();
+    document.getElementById("name").value =
+        po.name;
+    items = [...po.items];
+    // this will prevent any id to be same after creating a new purchase item id 
+    itemId = Math.max(...items.map(i => i.id), 0) + 1;
+    renderItems();
+};
 function renderItemsTable(items) {
     let html = `
     <div class="p-4 mt-2 mb-10">
