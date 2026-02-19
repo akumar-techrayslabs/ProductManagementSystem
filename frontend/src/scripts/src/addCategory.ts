@@ -18,6 +18,11 @@ const form = document.getElementById("category-form") as HTMLFormElement;
 // const tableBody = document.getElementById("category-table") as HTMLElement;
 
 
+const table = document.querySelector(
+  "#categoryTable",
+) as HTMLTableSectionElement;
+  let sub_form = document.getElementById("category-form") as HTMLElement;
+
 form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -60,21 +65,34 @@ form.addEventListener("submit", (e) => {
 });
 
 
-// function renderCategories() {
-//     tableBody.innerHTML = "";
+const btn = document.getElementById("add-btn") as HTMLDivElement;
+console.log("btn", btn);
 
-//     categories.forEach(cat => {
-//         tableBody.innerHTML += `
-//             <tr>
-//                 <td class="border p-2">${cat.id}</td>
-//                 <td class="border p-2">${cat.organization_id}</td>
-//                 <td class="border p-2">${cat.name}</td>
-//                 <td class="border p-2">
-//                     ${cat.is_active ? "Active" : "Inactive"}
-//                 </td>
-//             </tr>
-//         `;
-//     });
-// }
+btn.addEventListener("click", () => {
+  console.log("clicked");
+  
 
-// renderCategories();
+  sub_form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
+});
+function renderCategories() {
+    const tableBody = document.querySelector(
+  "#categoryTable tbody",
+) as HTMLTableSectionElement;
+  tableBody.innerHTML = "";
+
+  categories.forEach((cat, index) => {
+    tableBody.innerHTML += `
+            <tr>
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${cat.name}</td>
+                <td class="p-2">${cat.is_active}</td>
+        
+
+               
+            </tr>
+        `;
+  });
+}
+
+renderCategories();
