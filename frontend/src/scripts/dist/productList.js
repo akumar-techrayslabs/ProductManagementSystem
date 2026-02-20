@@ -128,7 +128,7 @@ function renderTable() {
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
       <td class="py-3 px-4 ">${product.warehouse_name}</td>
       <td class="py-3 px-4 text-green-500">${product.is_active ?? "-"}</td>
-      <td class="py-3 px-4 ">${getCurrentStock(product.product_id, 1)}</td>
+      <td class="py-3 px-4 ">${Math.max(getCurrentStock(product.product_id, 1), 0)}</td>
    
 
       
