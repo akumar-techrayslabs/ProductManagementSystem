@@ -59,8 +59,10 @@ form.addEventListener("submit", (e) => {
     categories.push(newCategory);
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+      sub_form.classList.toggle("hidden");
+  table.classList.toggle("hidden")
+    renderCategories();
 
-    // renderCategories();
     form.reset();
 });
 

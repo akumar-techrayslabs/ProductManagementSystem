@@ -1,3 +1,4 @@
+import { addStockEntry, getCurrentStock } from "./stockManagement.js";
 function showSuccess() {
     Swal.fire({
         title: "Success!",
@@ -73,7 +74,7 @@ function renderItems() {
       </tr>
     `;
         window.removeItem = function (id) {
-            items = items.filter(item => item.id !== id);
+            items = items.filter((item) => item.id !== id);
             renderItems();
         };
     });
@@ -96,7 +97,7 @@ saveBtn.addEventListener("click", (e) => {
     const grandTotal = Number(grandTotalEl.textContent);
     const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
     if (editingCustomerId) {
-        const index = customerOrders.findIndex(order => order.id === editingCustomerId);
+        const index = customerOrders.findIndex((order) => order.id === editingCustomerId);
         customerOrders[index] = {
             ...customerOrders[index],
             id: editingCustomerId,
@@ -105,31 +106,49 @@ saveBtn.addEventListener("click", (e) => {
             status_id,
             created_by,
             total_amount: grandTotal,
-            items
+            items,
         };
         editingCustomerId = null;
     }
     else {
-        const newOrder = {
-            id: Date.now(),
-            customer_id,
-            warehouse_id,
-            status_id,
-            total_amount: grandTotal,
-            created_by,
-            items
-        };
-        customerOrders.push(newOrder);
+        localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+        items.forEach((item) => {
+            const currentStock = getCurrentStock(item.product_id, 1);
+            console.log("currentStock ", currentStock);
+            console.log("item-quantity", item.quantity);
+            let curStock = Number(currentStock);
+            let curQuantity = Number(item.quantity);
+            if (curStock < curQuantity) {
+                console.log("------------------------------------------------");
+                alert("Insufficient stock for selected product!");
+                // showWarning("Insufficient stock for selected product!");
+                return;
+            }
+            else {
+                const newOrder = {
+                    id: Date.now(),
+                    customer_id,
+                    warehouse_id,
+                    status_id,
+                    total_amount: grandTotal,
+                    created_by,
+                    items,
+                };
+                customerOrders.push(newOrder);
+                addStockEntry(item.product_id, 1, 2, // out movement
+                item.quantity);
+                items = [];
+                itemId = 1;
+                renderItems();
+                document.getElementById("customer_id").value =
+                    "";
+                customer_add_section.classList.add("hidden");
+                customer_list.classList.remove("hidden");
+                renderCustomerOrders();
+                showSuccess();
+            }
+        });
     }
-    localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
-    items = [];
-    itemId = 1;
-    renderItems();
-    document.getElementById("customer_id").value = "";
-    customer_add_section.classList.add("hidden");
-    customer_list.classList.remove("hidden");
-    renderCustomerOrders();
-    showSuccess();
 });
 function loadProductsForDropdown() {
     const products = JSON.parse(localStorage.getItem("products") || "[]");
@@ -216,19 +235,77 @@ window.deleteCustomerOrder = function (id) {
         text: "This will delete the Customer Order",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, delete it!",
     }).then((result) => {
         if (result.isConfirmed) {
             let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
-            customerOrders = customerOrders.filter(order => order.id !== id);
+            customerOrders = customerOrders.filter((order) => order.id !== id);
+            //   const orderId = products.find((pr)=)
+            items.forEach((item) => {
+                addStockEntry(item.product_id, 1, 1, // in  movement
+                item.quantity);
+            });
             localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
             renderCustomerOrders();
         }
     });
 };
+/*
+
+  items.forEach(item => {
+
+  const currentStock = getCurrentStock(item.product_id, 1);
+    console.log("currentStock ",currentStock);
+    console.log("item-quantity",item.quantity);
+    let curStock = Number(currentStock);
+    let curQuantity = Number(item.quantity)
+  if(curStock < curQuantity){
+    console.log("------------------------------------------------");
+    alert("Insufficient stock for selected product!")
+    // showWarning("Insufficient stock for selected product!");
+    return;
+  }
+  else{
+      const newOrder: CustomerOrder = {
+    id: Date.now(),
+    customer_id,
+    warehouse_id,
+    status_id,
+    total_amount: grandTotal,
+    created_by,
+    items
+  };
+
+  customerOrders.push(newOrder);
+     addStockEntry(
+    item.product_id,
+    1,
+    2, // out movement
+    item.quantity
+  );
+
+  items = [];
+itemId = 1;
+renderItems();
+
+(document.getElementById("customer_id") as HTMLSelectElement).value = "";
+
+customer_add_section.classList.add("hidden");
+customer_list.classList.remove("hidden");
+
+renderCustomerOrders();
+
+  showSuccess();
+  }
+
+ 
+
+});
+
+*/
 window.editCustomerOrder = function (id) {
     const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
-    const order = customerOrders.find(o => o.id === id);
+    const order = customerOrders.find((o) => o.id === id);
     if (!order)
         return;
     editingCustomerId = id;
@@ -237,8 +314,8 @@ window.editCustomerOrder = function (id) {
     document.getElementById("customer_id").value =
         order.customer_id.toString();
     items = [...order.items];
-    // this is so that no items can have the same id after adding new items 
-    itemId = Math.max(...items.map(i => i.id), 0) + 1;
+    // this is so that no items can have the same id after adding new items
+    itemId = Math.max(...items.map((i) => i.id), 0) + 1;
     renderItems();
 };
 function renderItemsTable(items) {
@@ -256,7 +333,7 @@ function renderItemsTable(items) {
         </thead>
         <tbody>
   `;
-    items.forEach(item => {
+    items.forEach((item) => {
         const product = products.find((p) => p.id == item.product_id);
         html += `
       <tr>
@@ -281,5 +358,4 @@ window.toggleItems = function (id) {
 renderCustomerOrders();
 loadProductsForDropdown();
 loadCustomersForDropdown();
-export {};
 //# sourceMappingURL=customerOrder.js.map

@@ -1,3 +1,4 @@
+import { addStockEntry } from "./stockManagement.js";
 
 
 
@@ -140,7 +141,9 @@ saveBtn.addEventListener("click", (e) => {
         showWarning("Add atleast one product to create a Purchase Order!")
         return 
     }
+
     e.preventDefault();
+
   const organization_id = 1
   const supplier_id = Number(
     (document.getElementById("supplier_id") as HTMLInputElement).value
@@ -162,6 +165,10 @@ saveBtn.addEventListener("click", (e) => {
 
   const purchaseOrders: PurchaseOrder[] =
     JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+
+
+// editProduct Logic 
+
     if(editingId){
 
   const index = purchaseOrders.findIndex(po => po.id === editingId);
@@ -191,12 +198,22 @@ saveBtn.addEventListener("click", (e) => {
     items
   };
 
+
+
   purchaseOrders.push(newPO);
 }
 
 
 
   localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+  items.forEach(item => {
+  addStockEntry(
+    item.product_id,
+    1,        // warehouse_id by default 1 but I have to change it after applying multiple warehouse logic 
+    1,     
+    item.quantity
+  );
+});
     items = [];
   itemId = 1;
     renderItems();
@@ -276,6 +293,14 @@ function render() {
         JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
 
       purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+         items.forEach((item) => {
+              addStockEntry(
+                item.product_id,
+                1,
+                1, // in  movement
+                item.quantity,
+              );
+            });
 
       localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
 
@@ -419,3 +444,14 @@ function loadProductsForDropdown() {
 loadProductsForDropdown();
 
 loadSuppliersForDropdown();
+
+
+
+// deleting customer order:
+
+// reverse stock
+// addStockEntry(product_id, warehouse_id, 1, quantity);
+
+// If deleting purchase order:
+
+// addStockEntry(product_id, warehouse_id, 2, quantity);

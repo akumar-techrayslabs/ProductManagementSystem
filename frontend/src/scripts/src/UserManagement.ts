@@ -21,6 +21,17 @@ function showSuccess() {
   });
 }
 (window as any).showSuccess = showSuccess
+function showWarning(message:string) {
+  Swal.fire({
+    title: "Warning!",
+    text: `${message}`,
+    icon: "warning",
+    confirmButtonText: "OK",
+  }).then(()=>{
+    return
+  });
+}
+(window as any).showWarning = showWarning
 
 
 console.log("User Management page");
@@ -46,15 +57,26 @@ form.addEventListener("submit", (e) => {
   const email = (
     document.getElementById("user-email") as HTMLInputElement
   ).value.trim();
-  const phone_no = (document.getElementById("user-phone") as HTMLSelectElement).value;
-  const password = (document.getElementById("user-password") as HTMLSelectElement).value;
+
+  const exisitingEmail = users.find((us)=>us.email == email)
+  if(exisitingEmail)
+  {
+    showWarning("User already exists for this email");
+    return;
+  }
+  const phone_no = (document.getElementById("user-phone") as HTMLInputElement).value as string;
+  const password = (document.getElementById("user-password") as HTMLInputElement).value;
    
   const role_id =
     Number(
       (document.getElementById("user-role") as HTMLSelectElement).value,
     ) || null;
 
-
+    // if(phone_no.length() < 10)
+    // {
+    //     showWarning("Phone No should be atleast 10 digit")
+    //     return;
+    // }
 
 
   const userId = Date.now();

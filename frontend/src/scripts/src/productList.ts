@@ -1,3 +1,5 @@
+import { getCurrentStock } from "./stockManagement.js";
+
 interface Product {
   id: number;
   organization_id: number;
@@ -191,8 +193,8 @@ function renderTable() {
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
       <td class="py-3 px-4 text-green-500">${product.is_active ?? "-"}</td>
-      <td class="py-3 px-4 ">${product.quantity ?? "-"}</td>
-      <td class="py-3 px-4 ">${product.reserved_quantity ?? "-"}</td>
+      <td class="py-3 px-4 ">${getCurrentStock(product.product_id,1)}</td>
+   
 
       
         <td class="py-3 px-4"> <i class="fa-solid fa-trash cursor-pointer" style="color: #1e2939;" onclick="deleteFeature(${product.product_id})"></i>
@@ -203,6 +205,7 @@ function renderTable() {
       </td>
   
     `;
+        // <td class="py-3 px-4 ">${product.reserved_quantity ?? "-"}</td> 
 
     tableBody.appendChild(row);
   });

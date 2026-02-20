@@ -27,7 +27,9 @@ form.addEventListener("submit", (e) => {
     };
     categories.push(newCategory);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-    // renderCategories();
+    sub_form.classList.toggle("hidden");
+    table.classList.toggle("hidden");
+    renderCategories();
     form.reset();
 });
 const btn = document.getElementById("add-btn");

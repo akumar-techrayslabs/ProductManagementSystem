@@ -1,3 +1,4 @@
+import { addStockEntry } from "./stockManagement.js";
 function showSuccess() {
     Swal.fire({
         title: "Success!",
@@ -102,6 +103,7 @@ saveBtn.addEventListener("click", (e) => {
     }
     const grandTotal = Number(grandTotalEl.textContent);
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+    // editProduct Logic 
     if (editingId) {
         const index = purchaseOrders.findIndex(po => po.id === editingId);
         purchaseOrders[index] = {
@@ -129,6 +131,10 @@ saveBtn.addEventListener("click", (e) => {
         purchaseOrders.push(newPO);
     }
     localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+    items.forEach(item => {
+        addStockEntry(item.product_id, 1, // warehouse_id by default 1 but I have to change it after applying multiple warehouse logic 
+        1, item.quantity);
+    });
     items = [];
     itemId = 1;
     renderItems();
@@ -191,6 +197,10 @@ window.deletePurchaseOrder = function (id) {
         if (result.isConfirmed) {
             let purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
             purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+            items.forEach((item) => {
+                addStockEntry(item.product_id, 1, 1, // in  movement
+                item.quantity);
+            });
             localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
             render();
         }
@@ -286,5 +296,9 @@ function loadProductsForDropdown() {
 }
 loadProductsForDropdown();
 loadSuppliersForDropdown();
-export {};
+// deleting customer order:
+// reverse stock
+// addStockEntry(product_id, warehouse_id, 1, quantity);
+// If deleting purchase order:
+// addStockEntry(product_id, warehouse_id, 2, quantity);
 //# sourceMappingURL=ProductPurchase.js.map

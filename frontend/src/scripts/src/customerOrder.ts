@@ -1,3 +1,5 @@
+import { addStockEntry, getCurrentStock } from "./stockManagement.js";
+
 interface CustomerOrder {
   id: number;
   customer_id: number;
@@ -44,17 +46,23 @@ let editingCustomerId: number | null = null;
 let items: CustomerOrderItem[] = [];
 let itemId = 1;
 
-const addItemsForm = document.getElementById("product-items-form") as HTMLFormElement;
+const addItemsForm = document.getElementById(
+  "product-items-form",
+) as HTMLFormElement;
 const saveBtn = document.getElementById("saveCO")!;
 const table = document.getElementById("itemsTable")!;
 const grandTotalEl = document.getElementById("grandTotal")!;
-const customer_add_section = document.getElementById("customer-add-section") as HTMLDivElement;
-const customer_list = document.getElementById("customer-list") as HTMLDivElement;
+const customer_add_section = document.getElementById(
+  "customer-add-section",
+) as HTMLDivElement;
+const customer_list = document.getElementById(
+  "customer-list",
+) as HTMLDivElement;
 
 let products = JSON.parse(localStorage.getItem("products") || "[]");
 
 const tableBody = document.querySelector(
-  "#customerTable tbody"
+  "#customerTable tbody",
 ) as HTMLTableSectionElement;
 
 const btn = document.getElementById("add-btn") as HTMLDivElement;
@@ -67,9 +75,15 @@ btn.addEventListener("click", () => {
 addItemsForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const product_id = Number((document.getElementById("product") as HTMLInputElement).value);
-  const qty = Number((document.getElementById("qty") as HTMLInputElement).value);
-  const price = Number((document.getElementById("price") as HTMLInputElement).value);
+  const product_id = Number(
+    (document.getElementById("product") as HTMLInputElement).value,
+  );
+  const qty = Number(
+    (document.getElementById("qty") as HTMLInputElement).value,
+  );
+  const price = Number(
+    (document.getElementById("price") as HTMLInputElement).value,
+  );
 
   if (!product_id || !qty || !price) {
     showWarning("Please fill all product details");
@@ -110,11 +124,10 @@ function renderItems() {
         </td>
       </tr>
     `;
-    (window as any).removeItem = function(id: number) {
-  items = items.filter(item => item.id !== id);
-  renderItems();
-};
-
+    (window as any).removeItem = function (id: number) {
+      items = items.filter((item) => item.id !== id);
+      renderItems();
+    };
   });
 
   grandTotalEl.textContent = grandTotal.toFixed(2);
@@ -128,10 +141,12 @@ saveBtn.addEventListener("click", (e) => {
     return;
   }
 
-  const customer_id = Number((document.getElementById("customer_id") as HTMLInputElement).value);
-  const warehouse_id =  1;
-  const status_id =  1;
-  const created_by = 1; 
+  const customer_id = Number(
+    (document.getElementById("customer_id") as HTMLInputElement).value,
+  );
+  const warehouse_id = 1;
+  const status_id = 1;
+  const created_by = 1;
 
   if (!customer_id || !warehouse_id || !status_id) {
     showWarning("Please fill all required fields");
@@ -140,59 +155,75 @@ saveBtn.addEventListener("click", (e) => {
 
   const grandTotal = Number(grandTotalEl.textContent);
 
-  const customerOrders: CustomerOrder[] =
-    JSON.parse(localStorage.getItem("customerOrders") || "[]");
-if(editingCustomerId){
-
-  const index = customerOrders.findIndex(
-    order => order.id === editingCustomerId
+  const customerOrders: CustomerOrder[] = JSON.parse(
+    localStorage.getItem("customerOrders") || "[]",
   );
+  if (editingCustomerId) {
+    const index = customerOrders.findIndex(
+      (order) => order.id === editingCustomerId,
+    );
 
-  customerOrders[index] = {
-    ...customerOrders[index],
-    id:editingCustomerId,
-    customer_id,
-    warehouse_id,
-    status_id,
-    created_by,
-    total_amount: grandTotal,
-    items
-  };
+    customerOrders[index] = {
+      ...customerOrders[index],
+      id: editingCustomerId,
+      customer_id,
+      warehouse_id,
+      status_id,
+      created_by,
+      total_amount: grandTotal,
+      items,
+    };
 
-  editingCustomerId = null;
+    editingCustomerId = null;
+  } else {
+    localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
 
-} else {
+    items.forEach((item) => {
+      const currentStock = getCurrentStock(item.product_id, 1);
+      console.log("currentStock ", currentStock);
+      console.log("item-quantity", item.quantity);
+      let curStock = Number(currentStock);
+      let curQuantity = Number(item.quantity);
+      if (curStock < curQuantity) {
+        console.log("------------------------------------------------");
+        alert("Insufficient stock for selected product!");
+        // showWarning("Insufficient stock for selected product!");
+        return;
+      } else {
+        const newOrder: CustomerOrder = {
+          id: Date.now(),
+          customer_id,
+          warehouse_id,
+          status_id,
+          total_amount: grandTotal,
+          created_by,
+          items,
+        };
 
-  const newOrder: CustomerOrder = {
-    id: Date.now(),
-    customer_id,
-    warehouse_id,
-    status_id,
-    total_amount: grandTotal,
-    created_by,
-    items
-  };
+        customerOrders.push(newOrder);
+        addStockEntry(
+          item.product_id,
+          1,
+          2, // out movement
+          item.quantity,
+        );
 
-  customerOrders.push(newOrder);
-}
+        items = [];
+        itemId = 1;
+        renderItems();
 
+        (document.getElementById("customer_id") as HTMLSelectElement).value =
+          "";
 
+        customer_add_section.classList.add("hidden");
+        customer_list.classList.remove("hidden");
 
+        renderCustomerOrders();
 
-
-  localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
-    items = [];
-itemId = 1;
-renderItems();
-
-(document.getElementById("customer_id") as HTMLSelectElement).value = "";
-
-customer_add_section.classList.add("hidden");
-customer_list.classList.remove("hidden");
-
-renderCustomerOrders();
-
-  showSuccess();
+        showSuccess();
+      }
+    });
+  }
 });
 
 function loadProductsForDropdown() {
@@ -238,9 +269,9 @@ function loadCustomersForDropdown() {
 }
 
 function renderCustomerOrders() {
-
-  const customerOrders: CustomerOrder[] =
-    JSON.parse(localStorage.getItem("customerOrders") || "[]");
+  const customerOrders: CustomerOrder[] = JSON.parse(
+    localStorage.getItem("customerOrders") || "[]",
+  );
 
   const customers = JSON.parse(localStorage.getItem("customers") || "[]");
   const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
@@ -249,7 +280,6 @@ function renderCustomerOrders() {
   tableBody.innerHTML = "";
 
   customerOrders.forEach((order, index) => {
-
     const rowId = `items-${order.id}`;
 
     const customer = customers.find((c: any) => c.id == order.customer_id);
@@ -293,41 +323,98 @@ function renderCustomerOrders() {
   });
 }
 
-(window as any).deleteCustomerOrder = function(id: number) {
-
+(window as any).deleteCustomerOrder = function (id: number) {
   Swal.fire({
     title: "Are you sure?",
     text: "This will delete the Customer Order",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then((result:any) => {
+    confirmButtonText: "Yes, delete it!",
+  }).then((result: any) => {
+    if (result.isConfirmed) {
+      let customerOrders: CustomerOrder[] = JSON.parse(
+        localStorage.getItem("customerOrders") || "[]",
+      );
 
-    if(result.isConfirmed){
-
-      let customerOrders: CustomerOrder[] =
-        JSON.parse(localStorage.getItem("customerOrders") || "[]");
-
-      customerOrders = customerOrders.filter(order => order.id !== id);
+      customerOrders = customerOrders.filter((order) => order.id !== id);
+      //   const orderId = products.find((pr)=)
+      items.forEach((item) => {
+        addStockEntry(
+          item.product_id,
+          1,
+          1, // in  movement
+          item.quantity,
+        );
+      });
 
       localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
 
       renderCustomerOrders();
-
     }
-
   });
-
 };
 
-(window as any).editCustomerOrder = function(id: number) {
+/*
 
-  const customerOrders: CustomerOrder[] =
-    JSON.parse(localStorage.getItem("customerOrders") || "[]");
+  items.forEach(item => {
 
-  const order = customerOrders.find(o => o.id === id);
+  const currentStock = getCurrentStock(item.product_id, 1);
+    console.log("currentStock ",currentStock);
+    console.log("item-quantity",item.quantity);
+    let curStock = Number(currentStock);
+    let curQuantity = Number(item.quantity)
+  if(curStock < curQuantity){
+    console.log("------------------------------------------------");
+    alert("Insufficient stock for selected product!")
+    // showWarning("Insufficient stock for selected product!");
+    return;
+  }
+  else{
+      const newOrder: CustomerOrder = {
+    id: Date.now(),
+    customer_id,
+    warehouse_id,
+    status_id,
+    total_amount: grandTotal,
+    created_by,
+    items
+  };
 
-  if(!order) return;
+  customerOrders.push(newOrder);
+     addStockEntry(
+    item.product_id,
+    1,
+    2, // out movement       
+    item.quantity
+  );
+
+  items = [];
+itemId = 1;
+renderItems();
+
+(document.getElementById("customer_id") as HTMLSelectElement).value = "";
+
+customer_add_section.classList.add("hidden");
+customer_list.classList.remove("hidden");
+
+renderCustomerOrders();
+
+  showSuccess();
+  }
+
+ 
+
+});
+
+*/
+(window as any).editCustomerOrder = function (id: number) {
+  const customerOrders: CustomerOrder[] = JSON.parse(
+    localStorage.getItem("customerOrders") || "[]",
+  );
+
+  const order = customerOrders.find((o) => o.id === id);
+
+  if (!order) return;
 
   editingCustomerId = id;
 
@@ -338,15 +425,13 @@ function renderCustomerOrders() {
     order.customer_id.toString();
 
   items = [...order.items];
-// this is so that no items can have the same id after adding new items 
-  itemId = Math.max(...items.map(i => i.id), 0) + 1;
+  // this is so that no items can have the same id after adding new items
+  itemId = Math.max(...items.map((i) => i.id), 0) + 1;
 
   renderItems();
 };
 
-
 function renderItemsTable(items: CustomerOrderItem[]) {
-
   const products = JSON.parse(localStorage.getItem("products") || "[]");
 
   let html = `
@@ -363,8 +448,7 @@ function renderItemsTable(items: CustomerOrderItem[]) {
         <tbody>
   `;
 
-  items.forEach(item => {
-
+  items.forEach((item) => {
     const product = products.find((p: any) => p.id == item.product_id);
 
     html += `
@@ -386,14 +470,10 @@ function renderItemsTable(items: CustomerOrderItem[]) {
   return html;
 }
 
-
-
 (window as any).toggleItems = function (id: string) {
   const row = document.getElementById(id);
   row?.classList.toggle("hidden");
 };
-
-
 
 renderCustomerOrders();
 

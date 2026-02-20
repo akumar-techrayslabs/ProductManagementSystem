@@ -10,6 +10,17 @@ function showSuccess() {
     });
 }
 window.showSuccess = showSuccess;
+function showWarning(message) {
+    Swal.fire({
+        title: "Warning!",
+        text: `${message}`,
+        icon: "warning",
+        confirmButtonText: "OK",
+    }).then(() => {
+        return;
+    });
+}
+window.showWarning = showWarning;
 console.log("User Management page");
 let users = JSON.parse(localStorage.getItem("users") || "[]");
 const table = document.querySelector("#userTable");
@@ -20,9 +31,19 @@ form.addEventListener("submit", (e) => {
     const organization_id = 1;
     const full_name = document.getElementById("user-name").value.trim();
     const email = document.getElementById("user-email").value.trim();
+    const exisitingEmail = users.find((us) => us.email == email);
+    if (exisitingEmail) {
+        showWarning("User already exists for this email");
+        return;
+    }
     const phone_no = document.getElementById("user-phone").value;
     const password = document.getElementById("user-password").value;
     const role_id = Number(document.getElementById("user-role").value) || null;
+    // if(phone_no.length() < 10)
+    // {
+    //     showWarning("Phone No should be atleast 10 digit")
+    //     return;
+    // }
     const userId = Date.now();
     const newUser = {
         id: userId,

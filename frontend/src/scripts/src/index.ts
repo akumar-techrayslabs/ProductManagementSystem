@@ -17,3 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+localStorage.setItem("movementTypes", JSON.stringify([
+  { id: 1, name: "IN" },
+  { id: 2, name: "OUT" }
+]));
