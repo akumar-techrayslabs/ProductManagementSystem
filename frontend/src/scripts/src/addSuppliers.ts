@@ -12,6 +12,12 @@ function showSuccess() {
     text: "Supplier Added Successfully",
     icon: "success",
     confirmButtonText: "OK",
+  }).then(()=>{
+  
+      
+  form.classList.add("hidden");
+  table.classList.remove("hidden")
+      renderSuppliers();
   });
 }
 (window as any).showSuccess = showSuccess
@@ -20,7 +26,7 @@ const organization_id = 1;
 const table = document.querySelector(
   "#supplierTable",
 ) as HTMLTableSectionElement;
-  let sub_form = document.getElementById("customer-form") as HTMLElement;
+//   let sub_form = document.getElementById("customer-form") as HTMLElement;
 
 const STORAGE_KEY = "suppliers";
 
@@ -76,7 +82,9 @@ form.addEventListener("submit", (e) => {
     suppliers.push(newSupplier);
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(suppliers));
+
     showSuccess();
+  
     // renderCategories();
     form.reset();
 });
@@ -93,12 +101,13 @@ btn.addEventListener("click", () => {
   table.classList.toggle("hidden")
 });
 function renderSuppliers() {
+    const suppliers = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     const tableBody = document.querySelector(
   "#supplierTable tbody",
 ) as HTMLTableSectionElement;
   tableBody.innerHTML = "";
 
-  suppliers.forEach((sup, index) => {
+  suppliers.forEach((sup:any, index:any) => {
     tableBody.innerHTML += `
             <tr>
                 <td class="p-2">${index + 1}</td>

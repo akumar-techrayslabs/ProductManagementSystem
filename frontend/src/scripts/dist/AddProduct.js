@@ -5,6 +5,7 @@ let varieties = JSON.parse(localStorage.getItem("varieties") || "[]");
 const form = document.getElementById("product-form");
 form.addEventListener("submit", (e) => {
     e.preventDefault();
+    loadCategoriesForDropdown();
     if (!hasPermission("ADD_PRODUCT")) {
         alert("You are not authorized");
         return;
@@ -62,7 +63,8 @@ function loadCategoriesForDropdown() {
     console.log("loadcategory running");
     if (categories.length === 0) {
         console.log("No category available");
-        alert("No categories added Please add a category First!");
+        // alert("No categories added Please add a category First!")
+        return;
     }
     const select = document.getElementById("product-category");
     select.innerHTML = `<option value="">Select Category</option>`;
@@ -87,8 +89,14 @@ function loadWarehousesForDropdown() {
     `;
     });
 }
-loadWarehousesForDropdown();
 window.addEventListener("DOMContentLoaded", () => {
+    loadWarehousesForDropdown();
     loadCategoriesForDropdown();
+});
+// it is to fix the randomness of category dropdown 
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        loadCategoriesForDropdown();
+    }
 });
 //# sourceMappingURL=AddProduct.js.map

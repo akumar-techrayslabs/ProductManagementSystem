@@ -4,12 +4,16 @@ function showSuccess() {
         text: "Supplier Added Successfully",
         icon: "success",
         confirmButtonText: "OK",
+    }).then(() => {
+        form.classList.add("hidden");
+        table.classList.remove("hidden");
+        renderSuppliers();
     });
 }
 window.showSuccess = showSuccess;
 const organization_id = 1;
 const table = document.querySelector("#supplierTable");
-let sub_form = document.getElementById("customer-form");
+//   let sub_form = document.getElementById("customer-form") as HTMLElement;
 const STORAGE_KEY = "suppliers";
 let suppliers = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 const form = document.getElementById("supplier-form");
@@ -53,6 +57,7 @@ btn.addEventListener("click", () => {
     table.classList.toggle("hidden");
 });
 function renderSuppliers() {
+    const suppliers = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     const tableBody = document.querySelector("#supplierTable tbody");
     tableBody.innerHTML = "";
     suppliers.forEach((sup, index) => {

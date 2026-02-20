@@ -41,6 +41,10 @@ export function addStockEntry(
   if(movement_type_id === 1){
     newStock = currentStock + quantity;   // Purchase Order 
   } else {
+    if(currentStock < quantity){
+        console.log("Stock can't be negative")
+        return false;
+    }
     newStock = currentStock - quantity;   // Customer Orders means Sale 
   }
 
