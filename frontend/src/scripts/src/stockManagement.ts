@@ -6,17 +6,19 @@ export function getCurrentStock(product_id: number, warehouse_id: number): numbe
     localStorage.getItem("stockManagement") || "[]"
   );
 
+ 
   const productStocks = stocks.filter(
     (s: any) =>
-      s.product_id === product_id 
-    //     &&
-    //   s.warehouse_id === warehouse_id
+      s.product_id === product_id &&
+      s.warehouse_id === warehouse_id
   );
 
-  if(productStocks.length === 0) return 0;
+  if (productStocks.length === 0) return 0;
 
-  return productStocks[productStocks.length - 1].stock_after; // it is to get the last latest stock coz the last one is the latest stock movement
+ 
+  return productStocks[productStocks.length - 1].stock_after;
 }
+
 
 
 

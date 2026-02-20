@@ -88,68 +88,60 @@ saveBtn.addEventListener("click", (e) => {
         return;
     }
     const customer_id = Number(document.getElementById("customer_id").value);
-    const warehouse_id = 1;
+    const warehouse_id = 1; // change later if dynamic
     const status_id = 1;
     const created_by = 1;
-    if (!customer_id || !warehouse_id || !status_id) {
-        showWarning("Please fill all required fields");
+    if (!customer_id) {
+        showWarning("Please select customer");
         return;
     }
     const grandTotal = Number(grandTotalEl.textContent);
-    const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+    let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+    for (let item of items) {
+        const currentStock = getCurrentStock(item.product_id, warehouse_id);
+        // if (Number(currentStock) < Number(item.quantity)) {
+        //   showWarning("Insufficient stock for selected product!");
+        //   return;     }
+    }
     if (editingCustomerId) {
         const index = customerOrders.findIndex((order) => order.id === editingCustomerId);
         customerOrders[index] = {
             ...customerOrders[index],
-            id: editingCustomerId,
             customer_id,
             warehouse_id,
             status_id,
             created_by,
             total_amount: grandTotal,
-            items,
+            items
         };
         editingCustomerId = null;
     }
     else {
-        localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+        const newOrder = {
+            id: Date.now(),
+            customer_id,
+            warehouse_id,
+            status_id,
+            total_amount: grandTotal,
+            created_by,
+            items
+        };
+        customerOrders.push(newOrder);
         items.forEach((item) => {
-            const currentStock = getCurrentStock(item.product_id, 1);
-            console.log("currentStock ", currentStock);
-            console.log("item-quantity", item.quantity);
-            let curStock = Number(currentStock);
-            let curQuantity = Number(item.quantity);
-            if (curStock < curQuantity) {
-                console.log("------------------------------------------------");
-                alert("Insufficient stock for selected product!");
-                // showWarning("Insufficient stock for selected product!");
-                return;
-            }
-            else {
-                const newOrder = {
-                    id: Date.now(),
-                    customer_id,
-                    warehouse_id,
-                    status_id,
-                    total_amount: grandTotal,
-                    created_by,
-                    items,
-                };
-                customerOrders.push(newOrder);
-                addStockEntry(item.product_id, 1, 2, // out movement
-                item.quantity);
-                items = [];
-                itemId = 1;
-                renderItems();
-                document.getElementById("customer_id").value =
-                    "";
-                customer_add_section.classList.add("hidden");
-                customer_list.classList.remove("hidden");
-                renderCustomerOrders();
-                showSuccess();
-            }
+            addStockEntry(item.product_id, warehouse_id, 2, // OUT movement
+            item.quantity);
         });
     }
+    localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+    // Reset
+    items = [];
+    itemId = 1;
+    renderItems();
+    document.getElementById("customer_id").value = "";
+    customer_add_section.classList.add("hidden");
+    customer_list.classList.remove("hidden");
+    renderCustomerOrders();
+    showSuccess();
 });
 function loadProductsForDropdown() {
     const products = JSON.parse(localStorage.getItem("products") || "[]");

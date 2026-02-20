@@ -73,17 +73,16 @@ function getCombinedProducts() {
     const combined = [];
     products.forEach((product) => {
         const category = categories.find((c) => c.id === product.category_id);
-        const warehouse_name = warehouses.find((war) => war.id == product.warehouse_id);
-        console.log("warehouse_name", warehouse_name);
+        const warehouseObj = warehouses.find((war) => Number(war.id) === Number(product.warehouse_id));
+        const warehouse_name = warehouseObj ? warehouseObj.name : "N/A";
         const productVariants = varieties.filter((v) => v.product_id === product.id);
-        // for now it is not working but later one when I will fixed the issue with the id I can change it
         if (productVariants.length === 0) {
             combined.push({
                 product_id: product.id,
                 product_name: product.name,
                 product_sku: product.sku,
                 is_active: product.is_active,
-                warehouse_name: warehouse_name.name,
+                warehouse_name: warehouse_name,
                 category_name: category ? category.name : "N/A",
             });
         }
@@ -97,7 +96,7 @@ function getCombinedProducts() {
                 variant_name: variant.product_variant_name,
                 variant_sku: variant.sku,
                 price: variant.price,
-                warehouse_name: warehouse_name.name,
+                warehouse_name: warehouse_name,
                 quantity: 0,
                 reserved_quantity: 0,
             });

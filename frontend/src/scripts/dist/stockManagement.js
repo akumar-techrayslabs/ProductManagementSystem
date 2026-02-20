@@ -1,12 +1,10 @@
 export function getCurrentStock(product_id, warehouse_id) {
     const stocks = JSON.parse(localStorage.getItem("stockManagement") || "[]");
-    const productStocks = stocks.filter((s) => s.product_id === product_id
-    //     &&
-    //   s.warehouse_id === warehouse_id
-    );
+    const productStocks = stocks.filter((s) => s.product_id === product_id &&
+        s.warehouse_id === warehouse_id);
     if (productStocks.length === 0)
         return 0;
-    return productStocks[productStocks.length - 1].stock_after; // it is to get the last latest stock coz the last one is the latest stock movement
+    return productStocks[productStocks.length - 1].stock_after;
 }
 export function addStockEntry(product_id, warehouse_id, movement_type_id, quantity) {
     const stocks = JSON.parse(localStorage.getItem("stockManagement") || "[]");

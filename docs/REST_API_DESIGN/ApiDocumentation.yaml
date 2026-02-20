@@ -1,0 +1,4463 @@
+openapi: 3.1.0
+info:
+  title: INVENTORY MANAGMENT SYSTEM API
+  version: ''
+servers:
+  - url: https://ims.com
+
+
+components:
+  securitySchemes: 
+    bearerAuthToken:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+
+
+
+security: 
+  - bearerAuthToken:
+
+paths:
+
+
+  /api/organizations:
+    post:
+      tags: 
+        - Orgainzation Module
+      security: []
+      summary: Create a new Orgainzation
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - code 
+                  - is_active
+            
+
+                properties:
+                  name: 
+                    type: string
+                  code:
+                    type: string
+                  is_active:
+                    type: boolean
+
+      responses:
+        '201':
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+               
+                    example: "Organization created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        isActive:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                        
+                  
+        '400':
+          description: Error while creating
+        
+        '409':
+          description: Organization code already Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Organization code already exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+    get:
+      tags: 
+        - Orgainzation Module
+      summary: Get Orgainzation
+    
+        
+      responses:
+        '201':
+          description: Organizations fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+               
+                    example: "Organization fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        isActive:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                  
+        '400':
+          description: Error while fetching
+        
+        '404':
+          description: Not found
+          
+        '500':
+          description: Internal server error
+
+    delete:
+      tags: 
+        - Orgainzation Module
+      security: []
+      summary: Delete an Orgainzation by doing only is_active = false for soft deleting 
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - is_active
+            
+
+                properties:
+                  is_active:
+                    type: boolean
+                    example: false
+
+      responses:
+        '201':
+          description: Organization deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+               
+                    example: "Organization delete successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        isActive:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                        
+                  
+        '400':
+          description: Error while deleting
+        
+        '409':
+          description: Organization doesn't  Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Organization doesn't exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    put:
+      tags: 
+        - Orgainzation Module
+      security: []
+      summary: Updating an organization 
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - is_active
+            
+
+                properties:
+                 
+                  name: 
+                    type: string
+                  code:
+                    type: string
+                  is_active:
+                    type: boolean
+
+
+      responses:
+        '201':
+          description: Organization updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+               
+                    example: "Organization updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        isActive:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                        
+                  
+        '400':
+          description: Error while updating
+        
+        '409':
+          description: Organization doesn't  Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Organization doesn't exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/user:
+    post:
+      tags:
+         [Authentication]
+      summary: Create a new user
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - full_name
+                  - email
+                  - phone_no
+                  - password
+                  - status_id
+                
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  full_name:
+                    type: string
+                  phone_no:
+                    type: string                  
+                  email:
+                    type: string
+                    format: email
+                  password:
+                    type: string
+                  status_id:
+                    type: integer
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User created successfully"
+
+
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        full_name:
+                          type: string
+                        email:
+                          type: string 
+                          format: email
+                        status_id:
+                          type: number
+                        is_verfied:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                  
+
+
+        '400':
+          description: Error while creating
+
+        '404': 
+          description: Page not found 
+        '401':
+          description: User doesn't exists
+        '409':
+          description: Email already Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Email already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+      
+    get: 
+      tags:
+        [Authentication]
+      summary: Get users
+     
+
+               
+      responses:
+        '201':
+          description: User fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        full_name:
+                          type: string
+                        email:
+                          type: string 
+                          format: email
+                        status_id:
+                          type: number
+                        is_verfied:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                  
+        '400':
+          description: Error while fetching
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/user/:id:
+    put:
+      tags:
+         [Authentication]
+      summary: Update user
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                properties:
+                  organization_id: 
+                    type: integer
+                  full_name:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  password_hash:
+                    type: string
+                  status_id:
+                    type: integer
+      responses:
+        '201':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User updated successfully"
+
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      full_name:
+                        type: string
+                      email:
+                        type: string 
+                        format: email
+                      status_id:
+                        type: number
+                      is_verfied:
+                        type: boolean
+                        example: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Error while updating
+        
+        
+        '500':
+          description: Internal server error
+
+    delete: 
+      tags:
+        [Authentication]
+      summary: Delete user just change the is_active to false
+     
+      responses:
+        '201':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User deleted successfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      full_name:
+                        type: string
+                      email:
+                        type: string 
+                        format: email
+                      status_id:
+                        type: number
+                      is_verfied:
+                        type: boolean
+                        example: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Error while deleting
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/user/id:
+    get: 
+      tags:
+        [Authentication]
+      summary: Get users by Id
+     
+
+               
+      responses:
+        '201':
+          description: User fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        full_name:
+                          type: string
+                        email:
+                          type: string 
+                          format: email
+                        status_id:
+                          type: number
+                        is_verfied:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                  
+        '400':
+          description: Error while fetching
+        
+        
+        '500':
+          description: Internal server error
+  /api/auth/login:
+    post:
+      tags:
+        [Authentication]
+      security: []
+      summary: User Login 
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - email
+                  - password
+                  
+                properties:
+                  organization_id: 
+                    type: integer
+
+                  email:
+                    type: string
+                    format: email
+                  password:
+                    type: string
+
+      responses:
+        '201':
+          description: Logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Login successfully"
+                  access_token: 
+                    type: string
+                    example: jwt_token
+                  refresh_token:
+                    example: refresh_token
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      full_name:
+                        type: string
+                      email:
+                        type: string 
+                        format: email
+                      status_id:
+                        type: number
+                      is_verfied:
+                        type: boolean
+                        example: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Error while login
+        '401':
+          description: Invalid username or password (authentication failed).
+      
+          
+        '500':
+          description: Internal server error
+
+  /api/roles:
+    post:
+      tags:
+        [Roles]
+      summary: Create Role 
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name
+                  - description
+                  
+                properties:
+                  organization_id: 
+                    type: integer
+
+                  name:
+                    type: string
+                    
+                  description:
+                    type: string
+
+      responses:
+        '201':
+          description: Roles created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Created"
+
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      name:
+                        type: string
+                      description: 
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Missing required fields
+        '401': 
+          description: User not logged in 
+        '403':
+          description: User doesn't have permission to create users
+        '409':
+          description: Role id  already Exists
+    get:
+      tags:
+        [Roles]
+      summary: Get Roles
+      
+      responses:
+        '201':
+          description: Roles fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Created"
+
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        description: 
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                  
+        '400':
+          description: Missing required fields
+        '401': 
+          description: User not logged in 
+        '403':
+          description: User doesn't have permission to create users
+        '409':
+          description: Role id  already Exists  
+  /api/roles/:id:
+    put:
+      tags:
+        [Roles]
+      summary: Update Roles
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                  
+                properties:
+                  organization_id: 
+                    type: integer
+
+                  name:
+                    type: string
+                    
+                  description:
+                    type: string
+      responses:
+        '201':
+          description: Roles updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Updated"
+
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      name:
+                        type: string
+                      description: 
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Missing required fields
+        '401': 
+          description: User not logged in 
+        '403':
+          description: User doesn't have permission to create users
+        '409':
+          description: Role id  already Exists  
+    delete:
+      tags:
+        [Roles]
+      summary: Delete Roles
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                  
+               
+      responses:
+        '201':
+          description: Roles deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Deleted"
+
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      organization_id:
+                        type: string
+                      name:
+                        type: string
+                      description: 
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                  
+        '400':
+          description: Missing required fields
+        '401': 
+          description: User not logged in 
+        '403':
+          description: User doesn't have permission to create users
+        
+  /api/user-roles:
+    post:
+      tags:
+        [Roles]
+      summary: Assign Role to user
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user_id
+                  - role_id
+                  
+                properties:
+                  user_id: 
+                    type: integer
+
+                  role_id:
+                    type: integer
+                    
+                  
+
+      responses:
+        '201':
+          description: Roles assigned to user successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Assigend Succesfully"
+
+              
+                   
+                  
+        '400':
+          description: Error while Assigning roles
+
+  /api/user_roles/:id:
+    put:
+      tags:
+        [Roles]
+      summary: Update User Role
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+             
+                  
+                properties:
+                  user_id: 
+                    type: integer
+
+                  role_id:
+                    type: integer
+                    
+                  
+
+      responses:
+        '201':
+          description: Roles assigned to user successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Assigend Succesfully"
+
+              
+                   
+                  
+        '400':
+          description: Error while Assigning roles
+
+    delete:
+      tags:
+        [Roles]
+      summary: Deleted User's Role 
+      requestBody:
+          required: false
+          content:
+            application/json:
+              
+                    
+                  
+
+      responses:
+        '201':
+          description: Roles assigned to user deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Role Assigend to user Deleted Succesfully"
+
+              
+                   
+                  
+        '400':
+          description: Error while deleting roles      
+    get:
+      tags:
+        [Roles]
+      summary: Get User Roles
+
+                    
+          
+      responses:
+        '201':
+          description: user Roles fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "User Roles fetched Succesfully"
+                  
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        user_id:
+                          type: integer
+                        role_id:
+                          type: string
+               
+
+              
+                   
+                  
+        '400':
+          description: Error while fetching User roles
+        
+
+
+    
+  /api/categories:
+    post:
+      tags:
+         [Product Categories]
+      summary: Create a new Category
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name                
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                 
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Category created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        parent_id:
+                          type: integer  # Changed from 'number' to 'integer'
+                
+                      
+                  
+        '400':
+          description: Error while creating category
+        
+        '409':
+          description: Category_id  already Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Category already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/categories/:organization_id/:category_id:     
+    put:
+      tags:
+         [Product Categories]
+      summary: update Category
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+              
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                 
+      responses:
+        '201':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Category updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        parent_id:
+                          type: integer  
+                
+                      
+                  
+        '400':
+          description: Error while creating category
+        
+        '409':
+          description: Category_id  doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Category already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        [Product Categories]
+      summary: update Category
+      
+                 
+      responses:
+        '201':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Category deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        parent_id:
+                          type: integer  
+                
+                      
+                  
+        '400':
+          description: Error while deleting category
+        
+        '409':
+          description: Category_id  doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Category doesn't exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/categories/:organization_id:
+    get:
+      tags:
+        [Product Categories]
+      summary: Fetched all Categories
+     
+                 
+      responses:
+        '201':
+          description: Category fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Category fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        parent_id:
+                          type: integer  # Changed from 'number' to 'integer'
+                
+                      
+                  
+        '400':
+          description: Error while fetching category
+        
+       
+        '500':
+          description: Internal server error
+
+  /api/categories/:organization_id/:id:
+    get:
+      tags:
+         [Product Categories]
+      summary: Fetched Category based on 
+     
+                 
+      responses:
+        '201':
+          description: Category fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Category fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+                        parent_id:
+                          type: integer  # Changed from 'number' to 'integer'
+                
+                      
+                  
+        '400':
+          description: Error while fetching category
+        
+       
+        '500':
+          description: Internal server error
+  /api/products:
+    post:
+      tags:
+         [Products]
+      summary: Create a new Product
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name
+                  - sku
+                  - category_id
+                  - unit_id
+                  - reorder_level              
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  sku:
+                    type: string
+                  category_id:
+                    type: integer
+                  unit_id:
+                    type: integer
+                  reorder_level:
+                    type: integer
+                  is_active:
+                    type: boolean
+
+                 
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "product created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+
+                        sku:
+                          type: string
+                        category_id:
+                          type: integer
+                        
+                        unit_id:
+                          type: integer
+                        reorder_level:
+                          type: integer
+                        is_active:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while creating Product
+        
+        '409':
+          description: product_id already Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/product-images/:
+    post:
+      tags:
+         [Products]
+      summary: Create a new Product Image
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product_id
+                  - image_url
+                              
+
+                properties:
+                  product_id: 
+                    type: integer
+                  image_url:
+                    type: string
+
+                  is_primary:
+                    type: boolean
+
+                 
+      responses:
+        '201':
+          description: Product image created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                    message:
+               
+                      example: "product image created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        product_id:
+                          type: string
+                        image_url:
+                          type: string
+
+                        
+                        is_primary:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while creating Product image
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+         [Products]
+      summary: Fetched Product Images
+     
+
+                 
+      responses:
+        '201':
+          description: Product image fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                    message:
+               
+                      example: "product image fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        product_id:
+                          type: string
+                        image_url:
+                          type: string
+
+                        
+                        is_primary:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while fetching Product image
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists "
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/product-images:id/:
+    get:
+      tags:
+         [Products]
+      summary: Fetched Product Images according to ids
+     
+
+                 
+      responses:
+        '201':
+          description: Product image fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                    message:
+               
+                      example: "product image fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        product_id:
+                          type: string
+                        image_url:
+                          type: string
+
+                        
+                        is_primary:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while fetching Product image
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists "
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    put:
+      tags:
+         [Products]
+      summary: Update Product Images according to ids
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product_id
+                  - image_url
+                              
+
+                properties:
+                  product_id: 
+                    type: integer
+                  image_url:
+                    type: string
+
+                  is_primary:
+                    type: boolean    
+
+                 
+      responses:
+        '201':
+          description: Product image updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                    message:
+               
+                      example: "product image updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        product_id:
+                          type: string
+                        image_url:
+                          type: string
+
+                        
+                        is_primary:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while updating Product image
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists "
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+         [Products]
+      summary: Delete Product Images according to ids
+
+                 
+      responses:
+        '201':
+          description: Product image deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                    message:
+               
+                      example: "product image deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        product_id:
+                          type: string
+                        image_url:
+                          type: string
+
+                        
+                        is_primary:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while deleting Product image
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists "
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/products/:organization_id:
+
+    get:
+      tags:
+        [Products]
+      summary: get all Products within Organization 
+
+      responses:
+        '201':
+          description: Products fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Products fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+
+                        sku:
+                          type: string
+                        category_id:
+                          type: integer
+                        
+                        unit_id:
+                          type: integer
+                        reorder_level:
+                          type: integer
+                        is_active:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while fetching Products
+        
+        
+        '500':
+          description: Internal server error
+    put:
+      tags:
+         [Products]
+      summary: Update a Product
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  sku:
+                    type: string
+                  category_id:
+                    type: integer
+                  unit_id:
+                    type: integer
+                  reorder_level:
+                    type: integer
+                  is_active:
+                    type: boolean
+
+                 
+      responses:
+        '201':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+
+                        sku:
+                          type: string
+                        category_id:
+                          type: integer
+                        
+                        unit_id:
+                          type: integer
+                        reorder_level:
+                          type: integer
+                        is_active:
+                          type: boolean 
+                  
+        '400':
+          description: Error while updating Product
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+         [Products]
+      summary: Update a Product
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  sku:
+                    type: string
+                  category_id:
+                    type: integer
+                  unit_id:
+                    type: integer
+                  reorder_level:
+                    type: integer
+                  is_active:
+                    type: boolean
+
+                 
+      responses:
+        '201':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id:
+                          type: string
+                        name:
+                          type: string
+
+                        sku:
+                          type: string
+                        category_id:
+                          type: integer
+                        
+                        unit_id:
+                          type: integer
+                        reorder_level:
+                          type: integer
+                        is_active:
+                          type: boolean
+                
+                      
+                  
+        '400':
+          description: Error while updating Product
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id already exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/products-varieties:
+    post:
+      tags:
+         [Product Varieties]
+      summary: Create Product's Varieties
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product_id
+                  - product_variant_name
+                  - sku
+                  - price
+                       
+
+                properties:
+                  product_id: 
+                    type: integer
+                  product_variant_name:
+                    type: string
+                  sku:
+                    type: string
+                  price:
+                    type: integer
+                 
+      responses:
+        '201':
+          description: Product's variety created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        product_id: 
+                          type: integer
+                        product_variant_name:
+                          type: string
+                        sku:
+                          type: string
+                        price:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while creating Product Varieties
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+
+    get:
+      tags:
+         [Product Varieties]
+      summary: Get all Product's Varieties
+     
+      responses:
+        '201':
+          description: Product's variety fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Products' variety fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        product_id: 
+                          type: integer
+                        product_variant_name:
+                          type: string
+                        sku:
+                          type: string
+                        price:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while fetching Product Varieties
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/products-varities/:product_id:
+    get:
+      tags:
+         [Product Varieties]
+      summary: Get specific Product's Varieties using id
+     
+      responses:
+        '201':
+          description: Product's variety fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product's variety fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        product_id: 
+                          type: integer
+                        product_variant_name:
+                          type: string
+                        sku:
+                          type: string
+                        price:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while fetching Product Varieties
+        
+        
+        '500':
+          description: Internal server error
+
+    put:
+      tags:
+         [Product Varieties]
+      summary: Update specific Product's Varieties using id
+
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+
+                properties:
+                  product_id: 
+                    type: integer
+                  product_variant_name:
+                    type: string
+                  sku:
+                    type: string
+                  price:
+                    type: integer
+     
+      responses:
+        '201':
+          description: Product's variety updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product's variety fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        product_id: 
+                          type: integer
+                        product_variant_name:
+                          type: string
+                        sku:
+                          type: string
+                        price:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while fetching Product Varieties
+        
+        
+        '500':
+          description: Internal server error
+
+
+
+    delete:
+      tags:
+         [Product Varieties]
+      summary: Delete a specific Product's Varieties using id
+
+      
+     
+      responses:
+        '201':
+          description: Product's variety deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product's variety deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        product_id: 
+                          type: integer
+                        product_variant_name:
+                          type: string
+                        sku:
+                          type: string
+                        price:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while deleting Product Varieties
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/Warehouses:
+    post:
+      tags:
+         [Warehouse]
+      summary: Create Warehouses
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name
+                  - location
+                  - status_id
+                  - manager_id
+                       
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  location:
+                    type: string
+                  status_id:
+                    type: integer
+                  manager_id:
+                    type: integer
+      responses:
+        '201':
+          description: Warehouse created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Warehouse created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        location:
+                          type: string
+                        status_id:
+                          type: integer
+                        manager_id:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while creating Warehouse
+        
+        '409':
+          description: organization_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+  /api/warehouses/:organization_id:        
+    get:
+      tags:
+         [Warehouse]
+      summary: Get all  Warehouses
+
+      responses:
+        '201':
+          description: Warehouses fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Warehouse fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        location:
+                          type: string
+                        status_id:
+                          type: integer
+                        manager_id:
+                          type: integer
+  /api/warehouses/warehouse_id::   
+    get:
+      tags:
+         [Warehouse]
+      summary: Get specific Warehouse
+
+     
+
+      responses:
+        '201':
+          description: Warehouse fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Warehouse fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        location:
+                          type: string
+                        status_id:
+                          type: integer
+                        manager_id:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while fetching Warehouse
+        
+        '409':
+          description: warehouse_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: " warehouse_id doesn't exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+                    
+    put:
+      tags:
+         [Warehouse]
+      summary: update Warehouse
+
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name
+                  - location
+                  - status_id
+                  - manager_id
+                       
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  location:
+                    type: string
+                  status_id:
+                    type: integer
+                  manager_id:
+                    type: integer
+
+      responses:
+        '201':
+          description: Warehouses updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Warehouse updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        location:
+                          type: string
+                        status_id:
+                          type: integer
+                        manager_id:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while creating Warehouse
+        
+        '409':
+          description: organization_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: " organization doesn't exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+         [Warehouse]
+      summary: Delete Warehouse
+
+     
+      responses:
+        '201':
+          description: Warehouses deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Warehouse deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+            
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        location:
+                          type: string
+                        status_id:
+                          type: integer
+                        manager_id:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while deleting Warehouse
+        
+        '409':
+          description: wareshouse_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: " warehouse_id doesn't exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+
+
+  /api/stock-management:
+    post:
+      tags:
+         [Stock Management]
+      summary: Create Stock Management
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - product_id
+                  - warehouse_id
+                  - movement_type_id
+                  - quantity
+                  
+                       
+
+                properties:
+                  product_id: 
+                    type: integer
+                  warehouse_id:
+                    type: integer
+                  movement_type_id:
+                    type: integer
+                  quantity:
+                    type: integer
+                 
+      responses:
+        '201':
+          description: Product's stock created  successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product's stock created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        movement_type_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        stock_after:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Product Stocks
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists "
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+  /api/inventory/:product_id/:warehouse_id:
+    get:
+      tags:
+         [Stock Management]
+      summary: Get specific Product quantity
+ 
+
+                 
+      responses:
+        '201':
+          description: inventory fetched successfully successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "inventory fetched successfully successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        reserved_quantity:
+                          type: integer
+                
+                      
+                  
+        '400':
+          description: Error while creating Product Varieties
+        
+        '409':
+          description: product_id doesn't Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Product_id doesn't exists in this Orgainzation"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+  /api/purchase-orders:
+    post:
+      tags:
+         [Purchase Order ]
+      summary: Create purchase order
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - supplier_id
+                  - warehouse_id
+                  - status_id
+                  - total_amount
+                  - created_by
+                  
+                       
+
+                properties:
+                  supplier_id: 
+                    type: integer
+                  warehouse_id:
+                    type: integer
+                  status_id:
+                    type: integer
+                  total_amount:
+                    type: integer
+                  created_by:
+                    type: integer
+                 
+      responses:
+        '201':
+          description: Purchase Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Purchase Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/purchase-orders/:purchase_order_id:
+
+    get:
+      tags:
+         [Purchase Order ]
+      summary: Get purchase order
+     
+                 
+      responses:
+        '201':
+          description: Purchase Order fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Purchase Order
+        
+        
+        '500':
+          description: Internal server error
+
+
+    put:
+      tags:
+         [Purchase Order ]
+      summary: Update purchase order but only if status is 1 or it is in Draft
+
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+               
+                       
+
+                properties:
+                  supplier_id: 
+                    type: integer
+                  warehouse_id:
+                    type: integer
+                  status_id:
+                    type: integer
+                  total_amount:
+                    type: integer
+                  created_by:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: Purchase Order fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Purchase Order
+        
+        
+        '500':
+          description: Internal server error
+
+
+    delete:
+      tags:
+         [Purchase Order ]
+      summary: Delete purchase order but only if status is 1 or it is in Draft
+
+      
+     
+                 
+      responses:
+        '201':
+          description: Purchase Order deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while deleting Purchase Order
+        
+        
+        '500':
+          description: Internal server error
+  /api/purchase-orders/:id/approve:
+    put:
+      tags:
+         [Purchase Order ]
+      summary: Approves a draft purchase order on approval status changed to Approved it will then fetch inventory,add quantity, update inventory and update stock_management table's direction = IN 
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+
+                  - status_id
+                  - approved_by
+                  
+                  
+                       
+
+                properties:
+                  
+                  status_id:
+                    type: integer
+
+                  approved_by:
+                    type: integer
+                 
+      
+     
+                 
+      responses:
+        '201':
+          description: Purchase Order Approved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Purchase Order Approved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        purchase_order_id:
+                          type: integer
+                        status_id: 
+                          type: integer
+                        approved_by:
+                          type: integer
+                        stock_updates:
+                          type: array
+                          items: 
+                            type: object
+                            properties:
+                              product_id: 
+                                type: integer
+                              warehouse_id:
+                                  type: integer
+                              previous_stock:
+                                type: integer
+                              added_quantity:
+                                type: integer
+                              stock_after:
+                                type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Purchase order is already approved
+        
+        '404':
+          description: Purchase order not found
+
+        '403':
+          description: You do not have the permission to approve  the order
+        '500':
+          description: Internal server error
+
+  /api/purchase-order-items:
+    post:
+      tags:
+         [Purchase Order ]
+      summary: Add purchase items
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - purchase_order_id
+                  - product_id
+                  - quantity
+                  - unit_price
+                  - total_amount
+                 
+                  - tax_amount
+                       
+
+                properties:
+                  schemas:
+                    purchase_order_id:
+                      type: integer
+                    product_id:
+                      type: integer
+                    quantity:
+                      type: integer
+                    unit_price:
+                      type: integer
+                    total_amount:
+                      type: integer
+             
+                    tax_amount:
+                      type: integer
+                       
+                
+      responses:
+        '201':
+          description: Purchase Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Product Variety created successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Purchase Order
+        
+        
+        '500':
+          description: Internal server error
+
+  
+  /api/customers:
+    post:
+      tags:
+         [Customer ]
+      summary: Create customer 
+
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - organization_id
+                  - name
+                  - email
+                  - status_id
+                  - company_name
+                  
+                       
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  status_id:
+                    type: integer
+                  company_name:
+                    type: string
+     
+                 
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer  created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                        status_id:
+                          type: integer
+                        company_name:
+                          type: string
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+    put:
+      tags:
+         [Customer ]
+      summary: Update customer 
+
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+               
+                  
+                       
+
+                properties:
+                  organization_id: 
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  status_id:
+                    type: integer
+                  company_name:
+                    type: string
+     
+                 
+      responses:
+        '201':
+          description: Customer updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer  updated successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                        status_id:
+                          type: integer
+                        company_name:
+                          type: string
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+         [Customer ]
+      summary: Delete customer            
+      responses:
+        '201':
+          description: Customer deleted successfully only the is_active is set to false for soft delete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                        status_id:
+                          type: integer
+                        company_name:
+                          type: string
+                        
+                
+                      
+                  
+        '400':
+          description: Error while deleting Customer Order
+        
+        
+        '500':
+          description: Internal server error
+  /api/customers/:id:
+    get:
+      tags:
+         [Customer ]
+      summary: Get customer            
+      responses:
+        '201':
+          description: Customer fetched successfully 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer deleted successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        organization_id: 
+                          type: integer
+                        name:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                        status_id:
+                          type: integer
+                        company_name:
+                          type: string
+                        
+                
+                      
+                  
+        '400':
+          description: Error while deleting Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/customer-orders:
+    post:
+      tags:
+         [Customer Order ]
+      summary: Create customer order and status should be default = draft or 1 
+
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - customer_id
+                  - warehouse_id
+                  - status_id
+                  - total_amount
+                  - created_by
+                  
+                       
+
+                properties:
+                  supplier_id: 
+                    type: integer
+                  warehouse_id:
+                    type: integer
+                  status_id:
+                    type: integer
+                  total_amount:
+                    type: integer
+                  created_by:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: Customer Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        supplier_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        created_by:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+
+
+  /api/customer-order-items:
+    post:
+      tags:
+         [Customer Order ]
+      summary: Create customer order items 
+
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - customer_order_id
+                  - product_id
+                  - quantity
+                  - unit_price
+                  - total_amount
+                  
+                       
+
+                properties:
+                  customer_order_id: 
+                    type: integer
+                  product_id:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unit_price:
+                    type: integer
+                  total_amount:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: item added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_order_id: 
+                          type: integer
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/customer-orders/:warehouse_id:
+    get:
+      tags:
+         [Customer Order ]
+      summary: Get all Customers Orders
+
+      
+                 
+      responses:
+        '201':
+          description: item fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order fetched  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_id: 
+                          type: integer
+                        customer_name: 
+                          type: string
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/customer-orders/:id:
+    get:
+      tags:
+         [Customer Order ]
+      summary: Get specific Customer Order using Id 
+
+      
+                 
+      responses:
+        '201':
+          description: item fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order fetched  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_id: 
+                          type: integer
+                        warehouse_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              product_id: 
+                                type: integer
+                              product_name:
+                                type: string
+                              quantity:
+                                type: integer
+                              unit_price:
+                                type: integer
+                              total_amount:
+                                type: integer
+                          
+
+                        
+                
+                      
+                  
+        '400':
+          description: Error while fetching Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+    post:
+      tags:
+         [Customer Order ]
+      summary: Create customer order items 
+
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - customer_order_id
+                  - product_id
+                  - quantity
+                  - unit_price
+                  - total_amount
+                  
+                       
+
+                properties:
+                  customer_order_id: 
+                    type: integer
+                  product_id:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unit_price:
+                    type: integer
+                  total_amount:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: item added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_order_id: 
+                          type: integer
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while creating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+ 
+    put:
+      tags:
+         [Customer Order ]
+      summary: Update Customers Orders (only if the status is draft)
+
+      
+                 
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                  
+                       
+
+                properties:
+                  customer_order_id: 
+                    type: integer
+                  product_id:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unit_price:
+                    type: integer
+                  total_amount:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: item updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order updated  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_order_id: 
+                          type: integer
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while updating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+         [Customer Order ]
+      summary: Delete Customers Orders (only if the status is draft)
+
+      
+                 
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                
+                  
+                       
+
+                properties:
+                  customer_order_id: 
+                    type: integer
+                  product_id:
+                    type: integer
+                  quantity:
+                    type: integer
+                  unit_price:
+                    type: integer
+                  total_amount:
+                    type: integer
+     
+                 
+      responses:
+        '201':
+          description: item updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order updated  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        customer_order_id: 
+                          type: integer
+                        product_id:
+                          type: integer
+                        quantity:
+                          type: integer
+                        unit_price:
+                          type: integer
+                        total_amount:
+                          type: integer
+                        
+                
+                      
+                  
+        '400':
+          description: Error while updating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/customer_orders/:id/approve:
+    put:
+      tags:
+         [Customer Order ]
+      summary: Confirms a draft customer order , after confirmation it will change the status to confirm , stock decreses, stock_management created , inventory updated
+
+      
+                 
+      requestBody:
+          required: false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status_id: 
+                    type: integer
+             
+     
+                 
+      responses:
+        '201':
+          description: customer order approved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status_id
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Customer order confirmed successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: integer
+                        status_id:
+                          type: integer
+                        stock_updates:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              product_id: 
+                                type: integer
+                              warehouse_id: 
+                                type: integer
+                              previous_stock: 
+                                type: integer
+                              deduceted_stock:
+                                type: integer
+                              stock_after:
+                                type: integer
+
+                        
+                
+                      
+                  
+        '400':
+          description: Error while updating Customer Order
+        
+        
+        '500':
+          description: Internal server error
+
+  /api/status-master:
+     post:
+      tags: 
+        - Master Tables
+      summary: Create a new Orgainzation
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status_name
+                  - status_code 
+                  - is_final
+                  - is_editable
+                  
+            
+
+                properties:
+                  status_name: 
+                    type: string
+                  status_code:
+                    type: string
+                  is_final:
+                    type: boolean
+                  is_editable:
+                    type: boolean
+      responses:
+        '201':
+          description: Status created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+               
+                    example: "status created successfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      status_name: 
+                        type: string
+                      status_code:
+                        type: string
+                      is_final:
+                        type: boolean
+                      is_editable:
+                        type: boolean
+                  
+        '400':
+          description: Error while creating
+        
+        '409':
+          description: Status code already Exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Status code already exists"
+                  success:
+                    type: boolean
+                    example: false
+        '500':
+          description: Internal server error
+     get:
+      tags:
+        - Master Tables
+      summary: Get all statuses
+      responses:
+        '200':
+          description: Status list fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Status list fetched successfully"
+                  data:
+                    type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      status_name:
+                        type: string
+                      status_code:
+                        type: string
+                      is_final:
+
+        '400':
+          description: Error while fetching
+        
+        
+        '500':
+          description: Internal server error                     
+  /api/movement-types:
+    post:
+      tags:
+        - Master Tables
+      summary: Create movement type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - direction
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                direction:
+                  type: string
+                affects_inventory:
+                  type: boolean
+      responses:
+        '201':
+          description: Movement type created successfully
+        '409':
+          description: Movement code already exists
+        '500':
+          description: Internal server error
+        '400':
+          description: Error while creating
+
+  /api/units:
+    post:
+      tags:
+        - Master Tables
+      summary: Create unit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - symbol
+              properties:
+                name:
+                  type: string
+                symbol:
+                  type: string
+                is_decimal_allowed:
+                  type: boolean
+      responses:
+        '200':
+          description: Unit created sucessfully
+        '400':
+          description: Error while creating
+        
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+        '409':
+          description: Unit already exists
+
+    get:
+      tags:
+        - Master Tables
+      summary: Get all units
+      responses:
+        '200':
+          description: Units fetched successfully
+
+  /api/units/:id:
+    put:
+      tags:
+        - Master Tables
+      summary: Update unit
+
+   
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                symbol:
+                  type: string
+                is_decimal_allowed:
+                  type: boolean
+      responses:
+        '200':
+          description: Unit updated
+        '400':
+          description: Error while updating
+        
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - Master Tables
+      summary: Delete unit
+  
+      responses:
+        '200':
+          description: Unit deleted
+        '400':
+          description: Error while deleting
+        
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+  /api/payment-methods:
+    post:
+      tags:
+        - Master Tables
+      summary: Create payment method
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                  is_online:
+                    type: boolean
+      responses:
+        '201':
+          description: Payment method created
+        '409':
+          description: Duplicate payment method
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+        - Master Tables
+      summary: Get payment methods
+      responses:
+        '200':
+          description: Payment methods fetched
+
+  /api/payment-methods/:id:
+    put:
+      tags:
+        - Master Tables
+      summary: Update payment method
+
+      responses:
+        '200':
+          description: Payment method updated
+        '409':
+          description: Duplicate payment method
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - Master Tables
+      summary: Delete payment method
+
+      responses:
+        '200':
+          description: Payment method deleted
+
+
+
+  /api/payment-direction:
+    post:
+      tags:
+        - Master Tables
+      summary: Create payment direction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Payment direction created
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Payment direction created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+
+        '409':
+          description: Duplicate diretion method
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+        - Master Tables
+      summary: Get payment directions
+      responses:
+        '201':
+          description: Payment direction fetched
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Payment direction fetched  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+        '409':
+          description: Duplicate diretion method
+        '404':
+          description: Not found
+        '500':
+          description: Internal server error
+
+  /api/permissions:
+    post:
+      tags:
+        - Master Tables
+      summary: Create a new permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                
+              properties:
+                name:
+                  type: integer
+              
+      responses:
+        '201':
+          description: Permission created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Permission created  successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+
+        '400':
+          description: Error while creating permission
+
+        '409':
+          description: Permission already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Permission already exists"
+                  success:
+                    type: boolean
+                    example: false
+
+        '500':
+          description: Internal server error
+
+  /api/role-permissions:
+    post:
+      tags:
+      - Master Tables
+      summary: Assign permissions to a role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - role_id
+              - permission_id
+              properties:
+                role_id:
+                  type: integer
+                permission_id:
+                  type: integer
+                
+      responses:
+        '201':
+          description: Permissions assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    example: "Permissions assigned successfully"
+                success:
+                  type: boolean
+                  example: true
+
+        '400':
+          description: Invalid role or permission ids
+
+        '404':
+          description: Role not found
+
+        '500':
+          description: Internal server error
+
+    get:
+      tags:
+        - Master Tables
+      summary: Get permissions assigned to a role
+
+      responses:
+        '201':
+          description: Permission fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+               
+                    example: "Permission fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        role_id:
+                          type: integer
+                        permission_id:
+                          type: string
+
+        '404':
+          description: Role not found
+
+        '500':
+          description: Internal server error
+

@@ -139,60 +139,78 @@ function renderItems() {
 }
 
 saveBtn.addEventListener("click", (e) => {
+
+
+  e.preventDefault();
+
+
   if (items.length == 0) {
     showWarning("Add atleast one product to create a Purchase Order!");
     return;
   }
 
-  e.preventDefault();
 
   const warehouse_id = Number(
-    (document.getElementById("warehouse_id") as HTMLSelectElement).value,
+    (document.getElementById("warehouse_id") as HTMLSelectElement).value
   );
+
 
   if (!warehouse_id) {
     showWarning("Select Warehouse");
     return;
   }
 
+
   const supplier_id = Number(
-    (document.getElementById("supplier_id") as HTMLInputElement).value,
+    (document.getElementById("supplier_id") as HTMLSelectElement).value
   );
+
 
   if (!supplier_id) {
     showWarning("Add Supplier first");
     return;
   }
+
+
   const name = (document.getElementById("name") as HTMLInputElement).value;
+
+
   if (!name) {
-    showWarning("Add Purchase Title ");
+    showWarning("Add Purchase Title");
     return;
   }
 
+
   const grandTotal = Number(grandTotalEl.textContent);
 
-  const purchaseOrders: PurchaseOrder[] = JSON.parse(
-    localStorage.getItem("purchaseOrders") || "[]",
-  );
 
-  // editProduct Logic
+  const purchaseOrders: PurchaseOrder[] =
+    JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+
 
   if (editingId) {
-    const index = purchaseOrders.findIndex((po) => po.id === editingId);
+
+
+    const index = purchaseOrders.findIndex(po => po.id === editingId);
+
 
     purchaseOrders[index] = {
       ...purchaseOrders[index],
       supplier_id,
-      id: editingId,
+      warehouse_id,
       name,
       status: "draft",
-      warehouse_id,
       total_amount: grandTotal,
-      items,
+      items
     };
 
+
     editingId = null;
+
+
   } else {
+
+
     const newPO: PurchaseOrder = {
       id: Date.now(),
       warehouse_id,
@@ -200,29 +218,45 @@ saveBtn.addEventListener("click", (e) => {
       name,
       status: "draft",
       total_amount: grandTotal,
-      items,
+      items
     };
 
+
     purchaseOrders.push(newPO);
-      localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
-  items.forEach((item) => {
-    addStockEntry(
-      item.product_id,
-     warehouse_id ,// warehouse_id by default 1 but I have to change it after applying multiple warehouse logic
-      1,
-      item.quantity,
-    );
-  });
+
+
+    // Only add stock when creating new order
+    items.forEach(item => {
+      addStockEntry(
+        item.product_id,
+        warehouse_id,
+        1,
+        item.quantity
+      );
+    });
   }
 
 
+  // ✅ SAVE ALWAYS (for both edit and create)
+  localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+
+
+  // Reset
   items = [];
   itemId = 1;
   renderItems();
+
+
   (document.getElementById("name") as HTMLInputElement).value = "";
   (document.getElementById("supplier_id") as HTMLSelectElement).value = "";
+  (document.getElementById("warehouse_id") as HTMLSelectElement).value = "";
+
+
+  render();
   showSuccess();
 });
+
+
 
 const tableBody = document.querySelector(
   "#purchaseTable tbody",
@@ -281,6 +315,8 @@ function render() {
 }
 
 (window as any).deletePurchaseOrder = function (id: number) {
+
+
   Swal.fire({
     title: "Are you sure?",
     text: "This will delete the Purchase Order",
@@ -288,27 +324,48 @@ function render() {
     showCancelButton: true,
     confirmButtonText: "Yes, delete it!",
   }).then((result: any) => {
-    if (result.isConfirmed) {
-      let purchaseOrders: PurchaseOrder[] = JSON.parse(
-        localStorage.getItem("purchaseOrders") || "[]",
-      );
 
-      purchaseOrders = purchaseOrders.filter((po) => po.id !== id);
-      items.forEach((item) => {
+
+    if (result.isConfirmed) {
+
+
+      let purchaseOrders: PurchaseOrder[] =
+        JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
+
+
+   
+      const order = purchaseOrders.find(po => po.id === id);
+
+
+      if (!order) return;
+
+
+     
+      order.items.forEach(item => {
         addStockEntry(
           item.product_id,
-            item.warehouse_id,
-          1, // in  movement
-          item.quantity,
+          order.warehouse_id,
+          2, // OUT movement (reverse purchase)
+          item.quantity
         );
       });
 
+
+
+
+      purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+
+
+  
       localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+
 
       render();
     }
   });
 };
+
+
 
 (window as any).editPurchaseOrder = function (id: number) {
   const purchaseOrders: PurchaseOrder[] = JSON.parse(

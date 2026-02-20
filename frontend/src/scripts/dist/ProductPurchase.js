@@ -85,11 +85,11 @@ function renderItems() {
     grandTotalEl.textContent = grandTotal.toFixed(2);
 }
 saveBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     if (items.length == 0) {
         showWarning("Add atleast one product to create a Purchase Order!");
         return;
     }
-    e.preventDefault();
     const warehouse_id = Number(document.getElementById("warehouse_id").value);
     if (!warehouse_id) {
         showWarning("Select Warehouse");
@@ -102,23 +102,21 @@ saveBtn.addEventListener("click", (e) => {
     }
     const name = document.getElementById("name").value;
     if (!name) {
-        showWarning("Add Purchase Title ");
+        showWarning("Add Purchase Title");
         return;
     }
     const grandTotal = Number(grandTotalEl.textContent);
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-    // editProduct Logic
     if (editingId) {
-        const index = purchaseOrders.findIndex((po) => po.id === editingId);
+        const index = purchaseOrders.findIndex(po => po.id === editingId);
         purchaseOrders[index] = {
             ...purchaseOrders[index],
             supplier_id,
-            id: editingId,
+            warehouse_id,
             name,
             status: "draft",
-            warehouse_id,
             total_amount: grandTotal,
-            items,
+            items
         };
         editingId = null;
     }
@@ -130,20 +128,24 @@ saveBtn.addEventListener("click", (e) => {
             name,
             status: "draft",
             total_amount: grandTotal,
-            items,
+            items
         };
         purchaseOrders.push(newPO);
-        localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
-        items.forEach((item) => {
-            addStockEntry(item.product_id, warehouse_id, // warehouse_id by default 1 but I have to change it after applying multiple warehouse logic
-            1, item.quantity);
+        // Only add stock when creating new order
+        items.forEach(item => {
+            addStockEntry(item.product_id, warehouse_id, 1, item.quantity);
         });
     }
+    // ✅ SAVE ALWAYS (for both edit and create)
+    localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+    // Reset
     items = [];
     itemId = 1;
     renderItems();
     document.getElementById("name").value = "";
     document.getElementById("supplier_id").value = "";
+    document.getElementById("warehouse_id").value = "";
+    render();
     showSuccess();
 });
 const tableBody = document.querySelector("#purchaseTable tbody");
@@ -204,11 +206,14 @@ window.deletePurchaseOrder = function (id) {
     }).then((result) => {
         if (result.isConfirmed) {
             let purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-            purchaseOrders = purchaseOrders.filter((po) => po.id !== id);
-            items.forEach((item) => {
-                addStockEntry(item.product_id, item.warehouse_id, 1, // in  movement
+            const order = purchaseOrders.find(po => po.id === id);
+            if (!order)
+                return;
+            order.items.forEach(item => {
+                addStockEntry(item.product_id, order.warehouse_id, 2, // OUT movement (reverse purchase)
                 item.quantity);
             });
+            purchaseOrders = purchaseOrders.filter(po => po.id !== id);
             localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
             render();
         }
