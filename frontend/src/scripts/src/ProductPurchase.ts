@@ -1,11 +1,8 @@
 import { addStockEntry } from "./stockManagement.js";
 
-
-
-
 interface PurchaseOrder {
   id: number;
-  organization_id: number;
+  warehouse_id: number;
   supplier_id: number;
   name: string;
   status: "approved" | "draft" | "rejected";
@@ -144,7 +141,7 @@ saveBtn.addEventListener("click", (e) => {
 
     e.preventDefault();
 
-  const organization_id = 1
+  const warehouse_id = 1
   const supplier_id = Number(
     (document.getElementById("supplier_id") as HTMLInputElement).value
   );
@@ -179,7 +176,7 @@ saveBtn.addEventListener("click", (e) => {
     id:editingId,
     name,
      status: "draft",
-     organization_id,
+     warehouse_id,
     total_amount: grandTotal,
     items
   };
@@ -190,7 +187,7 @@ saveBtn.addEventListener("click", (e) => {
 
   const newPO: PurchaseOrder = {
     id: Date.now(),
-    organization_id,
+    warehouse_id,
     supplier_id,
     name,
     status: "draft",
@@ -242,7 +239,7 @@ function render() {
       <tr class="border-t bg-white">
         <td class="py-3 px-2">${index + 1}</td>
         <td class="py-3 px-2">${po.id}</td>
-        <td class="py-3 px-2">${po.organization_id}</td>
+        <td class="py-3 px-2">${po.warehouse_id}</td>
         <td class="py-3 px-2">${po.supplier_id}</td>
         <td class="py-3 px-2">${po.name}</td>
         <td class="py-3 px-2">${po.status}</td>

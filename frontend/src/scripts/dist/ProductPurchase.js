@@ -90,7 +90,7 @@ saveBtn.addEventListener("click", (e) => {
         return;
     }
     e.preventDefault();
-    const organization_id = 1;
+    const warehouse_id = 1;
     const supplier_id = Number(document.getElementById("supplier_id").value);
     if (!supplier_id) {
         showWarning("Add Supplier first");
@@ -112,7 +112,7 @@ saveBtn.addEventListener("click", (e) => {
             id: editingId,
             name,
             status: "draft",
-            organization_id,
+            warehouse_id,
             total_amount: grandTotal,
             items
         };
@@ -121,7 +121,7 @@ saveBtn.addEventListener("click", (e) => {
     else {
         const newPO = {
             id: Date.now(),
-            organization_id,
+            warehouse_id,
             supplier_id,
             name,
             status: "draft",
@@ -152,7 +152,7 @@ function render() {
       <tr class="border-t bg-white">
         <td class="py-3 px-2">${index + 1}</td>
         <td class="py-3 px-2">${po.id}</td>
-        <td class="py-3 px-2">${po.organization_id}</td>
+        <td class="py-3 px-2">${po.warehouse_id}</td>
         <td class="py-3 px-2">${po.supplier_id}</td>
         <td class="py-3 px-2">${po.name}</td>
         <td class="py-3 px-2">${po.status}</td>

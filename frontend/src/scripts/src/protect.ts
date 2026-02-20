@@ -1,12 +1,55 @@
 import {verifyToken } from "../dist/Auth.js";
 
 
+const isTokenIsStillValid = await verifyToken();
 document.addEventListener('DOMContentLoaded', async ()=>{
-    const isTokenIsStillValid = await verifyToken();
-    // console.log(isTokenIsStillValid);
+    console.log(isTokenIsStillValid);
+    // console.log(user);
     
-    if(!isTokenIsStillValid)
-    {
-        window.location.href = '/frontend/src/pages/Auth.html'
-    }
-})
+    
+    if(!isTokenIsStillValid.success)
+        {
+            window.location.href = '/frontend/src/pages/Auth.html'
+        }
+    })
+    
+    
+    
+export function hasPermission(perm: string): boolean {
+
+  const user = isTokenIsStillValid?.payload?.payload;
+    const role = isTokenIsStillValid.payload.payload.role;
+  if (!user) return false;
+  if(role == "superadmin")
+  {
+    console.log("user.role_name",user.role_name);
+    
+      return true;
+  }else{
+    const role_id = user.role_id;
+
+  const permissions = JSON.parse(
+    localStorage.getItem("permissions") || "[]"
+  );
+
+  const rolePermissions = JSON.parse(
+    localStorage.getItem("rolePermissions") || "[]"
+  );
+
+  const permissionObj = permissions.find(
+    (p: any) => p.name === perm
+  );
+
+  if (!permissionObj) return false;
+
+  const hasPerm = rolePermissions.some(
+    (rp: any) =>
+      rp.role_id === role_id &&
+      rp.permission_id === permissionObj.id
+  );
+
+  return hasPerm;
+  }
+
+  
+}

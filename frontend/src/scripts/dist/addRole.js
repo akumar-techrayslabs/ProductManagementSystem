@@ -11,6 +11,7 @@ function showSuccess() {
         window.location.reload();
     });
 }
+let rolePermissions = JSON.parse(localStorage.getItem("rolePermissions") || "[]");
 window.showSuccess = showSuccess;
 const form = document.getElementById("role-form");
 // const tableBody = document.getElementById("category-table") as HTMLElement;
@@ -24,8 +25,8 @@ form.addEventListener("submit", (e) => {
         alert("Role name required");
         return;
     }
-    const existsCategory = roles.some(rol => rol.name.toLowerCase() === name.toLowerCase()
-        && rol.organization_id === organization_id);
+    const existsCategory = roles.some((rol) => rol.name.toLowerCase() === name.toLowerCase() &&
+        rol.organization_id === organization_id);
     if (existsCategory) {
         alert("Role already exists");
         return;
@@ -36,6 +37,14 @@ form.addEventListener("submit", (e) => {
         name,
     };
     roles.push(newRole);
+    const checkboxes = document.querySelectorAll("#permission-container input[type='checkbox']:checked");
+    checkboxes.forEach((cb) => {
+        rolePermissions.push({
+            role_id: newRole.id,
+            permission_id: Number(cb.value),
+        });
+    });
+    localStorage.setItem("rolePermissions", JSON.stringify(rolePermissions));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(roles));
     showSuccess();
     form.classList.toggle("hidden");
@@ -54,17 +63,65 @@ function renderSuppliers() {
     const tableBody = document.querySelector("#roleTable tbody");
     tableBody.innerHTML = "";
     roles.forEach((role, index) => {
+        const rowId = `items-${role.id}`;
         tableBody.innerHTML += `
             <tr>
                 <td class="p-2">${index + 1}</td>
                 <td class="p-2">${role.name}</td>
+                <td class="p-2">
+                <button onclick="toggleItems('${rowId}')"
+            class=" text-black px-3 py-1 rounded flex flex-col justify-center items-center hover:bg-teal-600 cursor-pointer" title="see all items">
+         
+           <i class="fa-solid fa-angle-down " style="color: #000;"></i>
+          </button></td>
  
 
                
             </tr>
+              <tr id="${rowId}" class="hidden ">
+        <td colspan="8">
+          ${renderRolesTable(role.id)}
+        </td>
+      </tr>
         `;
     });
 }
+function renderRolesTable(id) {
+    const items = JSON.parse(localStorage.getItem("rolePermissions") || "[]");
+    console.log("items", items);
+    let html = `
+    <div class="p-4 mt-2 mb-10">
+    <table class="w-full border text-sm text-center py-4">
+      <thead class="bg-emerald-400 h-4">
+        <tr class="py-4 px-3">
+          <th class="py-3 px-3">Permissions</th>
+         
+        </tr>
+      </thead>
+      
+      <tbody>
+  `;
+    const permissions = JSON.parse(localStorage.getItem("permissions") || "[]");
+    items.forEach((item) => {
+        if (item.role_id == id) {
+            let permission_id = item.permission_id;
+            let permission = permissions.find((pr) => pr.id == permission_id);
+            console.log("permission", permission.name);
+            html += `
+      <tr class="divide-y">
+      <td class="py-3 px-3">${permission.name}</td>
+    
+      </tr>
+    `;
+        }
+    });
+    html += `</tbody></table></div>`;
+    return html;
+}
+window.toggleItems = function (id) {
+    const row = document.getElementById(id);
+    row?.classList.toggle("hidden");
+};
 renderSuppliers();
 export {};
 //# sourceMappingURL=addRole.js.map

@@ -1,3 +1,5 @@
+import { hasPermission } from "./protect.js";
+
 interface Category {
     id: number;
     organization_id: number;
@@ -25,8 +27,11 @@ const table = document.querySelector(
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-
-   console.log("category");
+     if (!hasPermission("ADD_CATEGORY") ) {
+        alert("You are not authorized");
+        return;
+      }else{
+             console.log("category");
    
 
     const name = (
@@ -64,6 +69,8 @@ form.addEventListener("submit", (e) => {
     renderCategories();
 
     form.reset();
+      }
+  
 });
 
 

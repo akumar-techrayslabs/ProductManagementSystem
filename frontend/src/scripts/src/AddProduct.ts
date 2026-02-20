@@ -1,3 +1,5 @@
+import { hasPermission } from "./protect.js";
+
 interface Product {
   id: number;
   organization_id: number;
@@ -34,8 +36,13 @@ const form = document.getElementById("product-form") as HTMLFormElement;
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-
-  const organization_id = 1
+if (!hasPermission("ADD_PRODUCT") ) {
+        alert("You are not authorized");
+        return;
+     }
+     
+     else{
+        const organization_id = 1
   const name = (
     document.getElementById("product-name") as HTMLInputElement
   ).value.trim();
@@ -109,6 +116,8 @@ form.addEventListener("submit", (e) => {
 
   alert("Product Created Successfully");
   form.reset();
+     }
+  
 });
 
 function loadCategoriesForDropdown() {

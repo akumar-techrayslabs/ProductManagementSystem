@@ -1,3 +1,4 @@
+import { hasPermission } from "./protect.js";
 import { addStockEntry, getCurrentStock } from "./stockManagement.js";
 function showSuccess() {
     Swal.fire({
@@ -238,15 +239,21 @@ window.deleteCustomerOrder = function (id) {
         confirmButtonText: "Yes, delete it!",
     }).then((result) => {
         if (result.isConfirmed) {
-            let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
-            customerOrders = customerOrders.filter((order) => order.id !== id);
-            //   const orderId = products.find((pr)=)
-            items.forEach((item) => {
-                addStockEntry(item.product_id, 1, 1, // in  movement
-                item.quantity);
-            });
-            localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
-            renderCustomerOrders();
+            if (!hasPermission("DELETE_PRODUCT")) {
+                alert("You are not authorized");
+                return;
+            }
+            else {
+                let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+                customerOrders = customerOrders.filter((order) => order.id !== id);
+                //   const orderId = products.find((pr)=)
+                items.forEach((item) => {
+                    addStockEntry(item.product_id, 1, 1, // in  movement
+                    item.quantity);
+                });
+                localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+                renderCustomerOrders();
+            }
         }
     });
 };
@@ -305,18 +312,24 @@ renderCustomerOrders();
 */
 window.editCustomerOrder = function (id) {
     const customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
-    const order = customerOrders.find((o) => o.id === id);
-    if (!order)
+    if (!hasPermission("UPDATE_ORDERS")) {
+        alert("You are not authorized");
         return;
-    editingCustomerId = id;
-    customer_add_section.classList.remove("hidden");
-    customer_list.classList.add("hidden");
-    document.getElementById("customer_id").value =
-        order.customer_id.toString();
-    items = [...order.items];
-    // this is so that no items can have the same id after adding new items
-    itemId = Math.max(...items.map((i) => i.id), 0) + 1;
-    renderItems();
+    }
+    else {
+        const order = customerOrders.find((o) => o.id === id);
+        if (!order)
+            return;
+        editingCustomerId = id;
+        customer_add_section.classList.remove("hidden");
+        customer_list.classList.add("hidden");
+        document.getElementById("customer_id").value =
+            order.customer_id.toString();
+        items = [...order.items];
+        // this is so that no items can have the same id after adding new items
+        itemId = Math.max(...items.map((i) => i.id), 0) + 1;
+        renderItems();
+    }
 };
 function renderItemsTable(items) {
     const products = JSON.parse(localStorage.getItem("products") || "[]");

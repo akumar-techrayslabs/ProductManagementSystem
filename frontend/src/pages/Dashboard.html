@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/output.css">
     <script  type="module" src="../scripts/dist/protect.js" defer></script>
     <script  type="module" src="../scripts/dist/index.js" defer></script>
+    <script  type="module" src="../scripts/dist/Dashboard.js" defer></script>
 </head>
 <body class="flex relative">
     <div id="sidebar-navbar"></div>
@@ -27,30 +28,37 @@
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
-        <div class="bg-teal-50 p-6 rounded-xl">
-          <p class="text-gray-500 mb-2">Total Items</p>
-          <h4 class="text-2xl font-bold text-teal-700">1,345</h4>
+        <div class="bg-teal-50 p-6 rounded-xl cursor-pointer hover:shadow" >
+          <a href="/frontend/src/pages/ProductList.html">    
+               <p class="text-gray-500 mb-2">Total Products</p>
+          <h4 class="text-2xl font-bold text-teal-700" id="total-products">0</h4></a>
+   
         </div>
 
-        <div class="bg-yellow-50 p-6 rounded-xl">
-          <p class="text-gray-500 mb-2">Low Stock Alerts</p>
-          <h4 class="text-2xl font-bold text-yellow-600">12</h4>
+        <div class="bg-yellow-50 p-6 rounded-xl cursor-pointer hover:shadow" >
+          <a href="/frontend/src/pages/AddCategories.html">
+          <p class="text-gray-500 mb-2">Total Categories</p>
+          <h4 class="text-2xl font-bold text-yellow-600" id="total-categories">12</h4>
+          </a>
         </div>
 
-        <div class="bg-blue-50 p-6 rounded-xl">
-          <p class="text-gray-500 mb-2">To be Delivered</p>
-          <h4 class="text-2xl font-bold text-blue-600">200</h4>
+        <div class="bg-blue-50 p-6 rounded-xl cursor-pointer hover:shadow">
+          <a href="/frontend/src/pages/UserManagement.html">
+          <p class="text-gray-500 mb-2">Total Users</p>
+          <h4 class="text-2xl font-bold text-blue-600"  id="total-users">200</h4>
+          </a>
         </div>
 
-        <div class="bg-purple-50 p-6 rounded-xl">
-          <p class="text-gray-500 mb-2">To be Ordered</p>
-          <h4 class="text-2xl font-bold text-purple-600">120</h4>
+        <div class="bg-purple-50 p-6 rounded-xl cursor-pointer hover:shadow" >
+          <a href="/frontend/src/pages/CustomerOrders.html"><p class="text-gray-500 mb-2">Customer Orders</p>
+          <h4 class="text-2xl font-bold text-purple-600" id="total-orders">120</h4></a>
+          
         </div>
 
       </div>
     </div>
 
-
+<!-- 
     <div class="bg-white p-6 rounded-2xl shadow-sm mb-8">
 
       <div class="flex justify-between items-center mb-6">
@@ -138,7 +146,7 @@
 
       </div>
 
-    </div>
+    </div> -->
 
   </div>
 </body>

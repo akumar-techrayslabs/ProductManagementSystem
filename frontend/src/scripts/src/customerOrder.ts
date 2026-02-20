@@ -1,3 +1,4 @@
+import { hasPermission } from "./protect.js";
 import { addStockEntry, getCurrentStock } from "./stockManagement.js";
 
 interface CustomerOrder {
@@ -332,24 +333,29 @@ function renderCustomerOrders() {
     confirmButtonText: "Yes, delete it!",
   }).then((result: any) => {
     if (result.isConfirmed) {
-      let customerOrders: CustomerOrder[] = JSON.parse(
-        localStorage.getItem("customerOrders") || "[]",
-      );
-
-      customerOrders = customerOrders.filter((order) => order.id !== id);
-      //   const orderId = products.find((pr)=)
-      items.forEach((item) => {
-        addStockEntry(
-          item.product_id,
-          1,
-          1, // in  movement
-          item.quantity,
+      if (!hasPermission("DELETE_PRODUCT")) {
+        alert("You are not authorized");
+        return;
+      } else {
+        let customerOrders: CustomerOrder[] = JSON.parse(
+          localStorage.getItem("customerOrders") || "[]",
         );
-      });
 
-      localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+        customerOrders = customerOrders.filter((order) => order.id !== id);
+        //   const orderId = products.find((pr)=)
+        items.forEach((item) => {
+          addStockEntry(
+            item.product_id,
+            1,
+            1, // in  movement
+            item.quantity,
+          );
+        });
 
-      renderCustomerOrders();
+        localStorage.setItem("customerOrders", JSON.stringify(customerOrders));
+
+        renderCustomerOrders();
+      }
     }
   });
 };
@@ -411,24 +417,28 @@ renderCustomerOrders();
   const customerOrders: CustomerOrder[] = JSON.parse(
     localStorage.getItem("customerOrders") || "[]",
   );
+  if (!hasPermission("UPDATE_ORDERS")) {
+    alert("You are not authorized");
+    return;
+  } else {
+    const order = customerOrders.find((o) => o.id === id);
 
-  const order = customerOrders.find((o) => o.id === id);
+    if (!order) return;
 
-  if (!order) return;
+    editingCustomerId = id;
 
-  editingCustomerId = id;
+    customer_add_section.classList.remove("hidden");
+    customer_list.classList.add("hidden");
 
-  customer_add_section.classList.remove("hidden");
-  customer_list.classList.add("hidden");
+    (document.getElementById("customer_id") as HTMLSelectElement).value =
+      order.customer_id.toString();
 
-  (document.getElementById("customer_id") as HTMLSelectElement).value =
-    order.customer_id.toString();
+    items = [...order.items];
+    // this is so that no items can have the same id after adding new items
+    itemId = Math.max(...items.map((i) => i.id), 0) + 1;
 
-  items = [...order.items];
-  // this is so that no items can have the same id after adding new items
-  itemId = Math.max(...items.map((i) => i.id), 0) + 1;
-
-  renderItems();
+    renderItems();
+  }
 };
 
 function renderItemsTable(items: CustomerOrderItem[]) {

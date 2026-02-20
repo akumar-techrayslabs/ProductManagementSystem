@@ -1,4 +1,4 @@
-interface User {
+export interface User {
   id: number;
   organization_id: number;
   full_name: string;
@@ -37,7 +37,7 @@ function showWarning(message:string) {
 console.log("User Management page");
 
 
-let users: User[] = JSON.parse(
+ let users: User[] = JSON.parse(
   localStorage.getItem("users") || "[]",
 );
   const table = document.querySelector(

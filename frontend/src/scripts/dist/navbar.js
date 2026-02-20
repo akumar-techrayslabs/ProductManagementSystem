@@ -1,4 +1,4 @@
-import { logoutAdmin } from "./Auth.js";
+import { logoutAdmin, verifyToken } from "./Auth.js";
 export function logout() {
     const logoutbtn = document.getElementById("logout");
     logoutbtn.addEventListener("click", () => {
@@ -6,6 +6,22 @@ export function logout() {
         window.location.reload();
     });
 }
+export async function rolefinder() {
+    const user_label = document.getElementById("user-label");
+    const isTokenIsStillValid = await verifyToken();
+    console.log(user_label);
+    const role = isTokenIsStillValid.payload.payload.role;
+    const p = document.createElement(`p`);
+    p.innerHTML = `<p 
+     
+      class="px-5 py-2 text-sm font-medium border rounded-3xl  text-gray-700 hover:text-black transition duration-200 mr-3"
+    >
+   ${role}
+  </p>`;
+    user_label.append(p);
+    console.log(role);
+}
+// if(userRole.)
 /* function deleteFeature(id: string) {
 
     Swal.fire({

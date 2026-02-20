@@ -23,17 +23,17 @@ export async function verifyToken() {
     console.log(token);
     if (token == null) {
         console.log("token is null");
-        return false;
+        return { success: false };
     }
     else {
         try {
-            await jwtVerify(token, SECRET_KEY);
-            return true;
+            const payload = await jwtVerify(token, SECRET_KEY);
+            return { success: true, payload };
         }
         catch (error) {
             console.log("toke is eeor ");
             console.log(error);
-            return false;
+            return { success: false };
         }
     }
 }
