@@ -38,6 +38,16 @@ form.addEventListener("submit", (e) => {
     }
     const phone_no = document.getElementById("user-phone").value;
     const password = document.getElementById("user-password").value;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const phonePattern = /^[0-9]{10}$/;
+    if (!emailPattern.test(email)) {
+        alert("Please enter a valid email address");
+        return;
+    }
+    if (!phonePattern.test(phone_no)) {
+        alert("Phone number must be exactly 10 digits and contain only numbers");
+        return;
+    }
     const role_id = Number(document.getElementById("user-role").value) || null;
     // if(phone_no.length() < 10)
     // {
