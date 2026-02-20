@@ -2,7 +2,7 @@ import { hasPermission } from "./protect.js";
 
 interface Product {
   id: number;
-  organization_id: number;
+  warehouse_id: number;
   name: string;
   sku: string;
   category_id: number | null;
@@ -42,7 +42,9 @@ if (!hasPermission("ADD_PRODUCT") ) {
      }
      
      else{
-        const organization_id = 1
+        const warehouse_id = Number(
+    (document.getElementById("warehouse_id") as HTMLSelectElement).value,
+  );
   const name = (
     document.getElementById("product-name") as HTMLInputElement
   ).value.trim();
@@ -70,7 +72,7 @@ if (!hasPermission("ADD_PRODUCT") ) {
 
   const newProduct: Product = {
     id: productId,
-    organization_id,
+    warehouse_id,
     name,
     sku,
     category_id,
@@ -144,6 +146,23 @@ function loadCategoriesForDropdown() {
             `;
     });
 }
+function loadWarehousesForDropdown() {
+  const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
+
+  const select = document.getElementById("warehouse_id") as HTMLSelectElement;
+
+  select.innerHTML = `<option value="">Select Warehouse</option>`;
+
+  warehouses.forEach((wh: any) => {
+    select.innerHTML += `
+      <option value="${wh.id}">
+        ${wh.name}
+      </option>
+    `;
+  });
+}
+
+loadWarehousesForDropdown();
 
 window.addEventListener("DOMContentLoaded",()=>{
 

@@ -10,7 +10,7 @@ form.addEventListener("submit", (e) => {
         return;
     }
     else {
-        const organization_id = 1;
+        const warehouse_id = Number(document.getElementById("warehouse_id").value);
         const name = document.getElementById("product-name").value.trim();
         const sku = document.getElementById("product-sku").value.trim();
         const category_id = Number(document.getElementById("product-category").value) || null;
@@ -25,7 +25,7 @@ form.addEventListener("submit", (e) => {
         const productId = Date.now();
         const newProduct = {
             id: productId,
-            organization_id,
+            warehouse_id,
             name,
             sku,
             category_id,
@@ -75,6 +75,19 @@ function loadCategoriesForDropdown() {
             `;
     });
 }
+function loadWarehousesForDropdown() {
+    const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
+    const select = document.getElementById("warehouse_id");
+    select.innerHTML = `<option value="">Select Warehouse</option>`;
+    warehouses.forEach((wh) => {
+        select.innerHTML += `
+      <option value="${wh.id}">
+        ${wh.name}
+      </option>
+    `;
+    });
+}
+loadWarehousesForDropdown();
 window.addEventListener("DOMContentLoaded", () => {
     loadCategoriesForDropdown();
 });

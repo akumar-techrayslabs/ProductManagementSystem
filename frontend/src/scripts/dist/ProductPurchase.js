@@ -52,7 +52,7 @@ addItemsForm.addEventListener("submit", (e) => {
         quantity: qty,
         unitPrice: price,
         tax,
-        total
+        total,
     };
     console.log("purchase items added ");
     items.push(item);
@@ -61,7 +61,7 @@ addItemsForm.addEventListener("submit", (e) => {
 function renderItems() {
     table.innerHTML = "";
     let grandTotal = 0;
-    items.forEach(item => {
+    items.forEach((item) => {
         grandTotal += item.total;
         let productname = products.find((c) => c.id == item.product_id);
         table.innerHTML += `
@@ -78,7 +78,7 @@ function renderItems() {
       </tr>
     `;
         window.removeItem = function (id) {
-            items = items.filter(item => item.id !== id);
+            items = items.filter((item) => item.id !== id);
             renderItems();
         };
     });
@@ -90,7 +90,11 @@ saveBtn.addEventListener("click", (e) => {
         return;
     }
     e.preventDefault();
-    const warehouse_id = 1;
+    const warehouse_id = Number(document.getElementById("warehouse_id").value);
+    if (!warehouse_id) {
+        showWarning("Select Warehouse");
+        return;
+    }
     const supplier_id = Number(document.getElementById("supplier_id").value);
     if (!supplier_id) {
         showWarning("Add Supplier first");
@@ -103,9 +107,9 @@ saveBtn.addEventListener("click", (e) => {
     }
     const grandTotal = Number(grandTotalEl.textContent);
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-    // editProduct Logic 
+    // editProduct Logic
     if (editingId) {
-        const index = purchaseOrders.findIndex(po => po.id === editingId);
+        const index = purchaseOrders.findIndex((po) => po.id === editingId);
         purchaseOrders[index] = {
             ...purchaseOrders[index],
             supplier_id,
@@ -114,7 +118,7 @@ saveBtn.addEventListener("click", (e) => {
             status: "draft",
             warehouse_id,
             total_amount: grandTotal,
-            items
+            items,
         };
         editingId = null;
     }
@@ -126,15 +130,15 @@ saveBtn.addEventListener("click", (e) => {
             name,
             status: "draft",
             total_amount: grandTotal,
-            items
+            items,
         };
         purchaseOrders.push(newPO);
+        localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
+        items.forEach((item) => {
+            addStockEntry(item.product_id, warehouse_id, // warehouse_id by default 1 but I have to change it after applying multiple warehouse logic
+            1, item.quantity);
+        });
     }
-    localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
-    items.forEach(item => {
-        addStockEntry(item.product_id, 1, // warehouse_id by default 1 but I have to change it after applying multiple warehouse logic 
-        1, item.quantity);
-    });
     items = [];
     itemId = 1;
     renderItems();
@@ -146,13 +150,17 @@ const tableBody = document.querySelector("#purchaseTable tbody");
 function render() {
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
     tableBody.innerHTML = "";
+    const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
     purchaseOrders.forEach((po, index) => {
         const rowId = `items-${po.id}`;
         tableBody.innerHTML += `
       <tr class="border-t bg-white">
         <td class="py-3 px-2">${index + 1}</td>
         <td class="py-3 px-2">${po.id}</td>
-        <td class="py-3 px-2">${po.warehouse_id}</td>
+     <td class="py-3 px-2">
+  ${warehouses.find((w) => w.id === po.warehouse_id)?.name || "-"}
+</td>
+
         <td class="py-3 px-2">${po.supplier_id}</td>
         <td class="py-3 px-2">${po.name}</td>
         <td class="py-3 px-2">${po.status}</td>
@@ -192,13 +200,13 @@ window.deletePurchaseOrder = function (id) {
         text: "This will delete the Purchase Order",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, delete it!",
     }).then((result) => {
         if (result.isConfirmed) {
             let purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-            purchaseOrders = purchaseOrders.filter(po => po.id !== id);
+            purchaseOrders = purchaseOrders.filter((po) => po.id !== id);
             items.forEach((item) => {
-                addStockEntry(item.product_id, 1, 1, // in  movement
+                addStockEntry(item.product_id, item.warehouse_id, 1, // in  movement
                 item.quantity);
             });
             localStorage.setItem("purchaseOrders", JSON.stringify(purchaseOrders));
@@ -208,7 +216,7 @@ window.deletePurchaseOrder = function (id) {
 };
 window.editPurchaseOrder = function (id) {
     const purchaseOrders = JSON.parse(localStorage.getItem("purchaseOrders") || "[]");
-    const po = purchaseOrders.find(p => p.id === id);
+    const po = purchaseOrders.find((p) => p.id === id);
     if (!po)
         return;
     editingId = id;
@@ -216,11 +224,12 @@ window.editPurchaseOrder = function (id) {
     purchase_list.classList.add("hidden");
     document.getElementById("supplier_id").value =
         po.supplier_id.toString();
-    document.getElementById("name").value =
-        po.name;
+    document.getElementById("name").value = po.name;
+    document.getElementById("warehouse_id").value =
+        po.warehouse_id.toString();
     items = [...po.items];
-    // this will prevent any id to be same after creating a new purchase item id 
-    itemId = Math.max(...items.map(i => i.id), 0) + 1;
+    // this will prevent any id to be same after creating a new purchase item id
+    itemId = Math.max(...items.map((i) => i.id), 0) + 1;
     renderItems();
 };
 function renderItemsTable(items) {
@@ -238,7 +247,7 @@ function renderItemsTable(items) {
       </thead>
       <tbody>
   `;
-    items.forEach(item => {
+    items.forEach((item) => {
         let product = products.find((c) => c.id == item.product_id);
         html += `
       <tr class="divide-y">
@@ -267,8 +276,7 @@ function loadSuppliersForDropdown() {
     }
     const select = document.getElementById("supplier_id");
     select.innerHTML = `<option value="">Select Suppliers</option>`;
-    suppliers
-        .forEach((sup) => {
+    suppliers.forEach((sup) => {
         select.innerHTML += `
                 <option value="${sup.id}">
                     ${sup.name}
@@ -285,8 +293,7 @@ function loadProductsForDropdown() {
     }
     const select = document.getElementById("product");
     select.innerHTML = `<option value="">Select Produts</option>`;
-    products
-        .forEach((pro) => {
+    products.forEach((pro) => {
         select.innerHTML += `
                 <option value="${pro.id}">
                     ${pro.name}
@@ -294,6 +301,19 @@ function loadProductsForDropdown() {
             `;
     });
 }
+function loadWarehousesForDropdown() {
+    const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
+    const select = document.getElementById("warehouse_id");
+    select.innerHTML = `<option value="">Select Warehouse</option>`;
+    warehouses.forEach((wh) => {
+        select.innerHTML += `
+      <option value="${wh.id}">
+        ${wh.name}
+      </option>
+    `;
+    });
+}
+loadWarehousesForDropdown();
 loadProductsForDropdown();
 loadSuppliersForDropdown();
 // deleting customer order:

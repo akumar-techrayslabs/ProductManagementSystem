@@ -2,7 +2,7 @@ import { getCurrentStock } from "./stockManagement.js";
 
 interface Product {
   id: number;
-  organization_id: number;
+  warehouse_id: number;
   name: string;
   sku: string;
   category_id: number | null;
@@ -28,6 +28,7 @@ interface CombinedProduct {
   product_name: string;
   product_sku: string;
   category_name: string;
+   warehouse_name:string;
   is_active: boolean;
   variant_name?: string;
   variant_sku?: string;
@@ -120,12 +121,15 @@ let categories: Category[] = JSON.parse(
   localStorage.getItem("categories") || "[]",
 );
 
+ const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
 function getCombinedProducts(): CombinedProduct[] {
   const combined: CombinedProduct[] = [];
 
   products.forEach((product) => {
     const category = categories.find((c) => c.id === product.category_id);
-
+    const warehouse_name = warehouses.find((war:any)=>war.id == product.warehouse_id)
+    console.log("warehouse_name",warehouse_name);
+    
     const productVariants = varieties.filter(
       (v) => v.product_id === product.id,
     );
@@ -138,11 +142,13 @@ function getCombinedProducts(): CombinedProduct[] {
         product_name: product.name,
         product_sku: product.sku,
         is_active: product.is_active,
+        warehouse_name:warehouse_name.name,
         category_name: category ? category.name : "N/A",
       });
     }
 
     productVariants.forEach((variant) => {
+
       combined.push({
         product_id: product.id,
         product_name: product.name,
@@ -152,6 +158,7 @@ function getCombinedProducts(): CombinedProduct[] {
         variant_name: variant.product_variant_name,
         variant_sku: variant.sku,
         price: variant.price,
+        warehouse_name:warehouse_name.name,
         quantity: 0,
         reserved_quantity: 0,
       });
@@ -182,7 +189,7 @@ function renderTable() {
 
   finalProductList.forEach((product, index) => {
     const row = document.createElement("tr");
-
+  
     row.innerHTML = `
       <td class="py-3 px-4 ">${index + 1}</td>
       <td class="py-3 px-4 ">${product.product_name}</td>
@@ -191,7 +198,7 @@ function renderTable() {
       <td class="py-3 px-4 ">${product.variant_name ?? "-"}</td>
       <td class="py-3 px-4 ">${product.variant_sku ?? "-"}</td>
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
-      <td class="py-3 px-4 ">${product.price ?? "-"}</td>
+      <td class="py-3 px-4 ">${product.warehouse_name}</td>
       <td class="py-3 px-4 text-green-500">${product.is_active ?? "-"}</td>
       <td class="py-3 px-4 ">${getCurrentStock(product.product_id,1)}</td>
    
@@ -249,6 +256,31 @@ function loadCategoriesForDropdown(selectedCategoryId: number | null = null) {
   });
 }
 
+function loadWarehousesForDropdown(selectedWarehouseId: number | null = null) {
+  const warehouses = JSON.parse(
+    localStorage.getItem("warehouses") || "[]"
+  );
+
+  const select = document.getElementById(
+    "warehouse_id"
+  ) as HTMLSelectElement;
+
+  select.innerHTML = `<option value="">Select Warehouse</option>`;
+
+  warehouses.forEach((warehouse: any) => {
+    const isSelected =
+      selectedWarehouseId !== null &&
+      warehouse.id === selectedWarehouseId
+        ? "selected"
+        : "";
+
+    select.innerHTML += `
+      <option value="${warehouse.id}" ${isSelected}>
+        ${warehouse.name}
+      </option>
+    `;
+  });
+}
 
 renderTable();
 let editingProductId:number|null = null
@@ -284,6 +316,7 @@ function editProduct(id: number): void {
 //   (document.getElementById("product-category") as HTMLSelectElement).value =
 //     product.category_id ? String(product.category_id) : "";
     loadCategoriesForDropdown(product?.category_id)
+    loadWarehousesForDropdown(product?.warehouse_id)
 //   (document.getElementById("product-category") as HTMLSelectElement).value =
 //     product.category_id ? String(product.category_id) : "";
 
@@ -321,7 +354,11 @@ const updatedProduct :Product = {
       (document.getElementById("product-category") as HTMLSelectElement).value
     ) || null,
 
-  reorder_level : 0,organization_id:1,
+  reorder_level : 0,
+  warehouse_id: Number(
+  (document.getElementById("warehouse_id") as HTMLSelectElement).value
+),
+
   is_active:true
 
 }
@@ -362,8 +399,8 @@ console.log("editiingProductId",editingProductId);
   localStorage.setItem("products", JSON.stringify(products));
   localStorage.setItem("varieties", JSON.stringify(varieties));
 
-  document.getElementById("edit-form")?.classList.add("hidden");
-  document.getElementById("productTable")?.classList.remove("hidden");
+  document.getElementById("edit-form")?.classList.toggle("hidden");
+  document.getElementById("productTable")?.classList.toggle("hidden");
 
   editingProductId = null;
 
@@ -386,8 +423,9 @@ console.log("editiingProductId",editingProductId);
   btn?.addEventListener("click",(e)=>{
     e.preventDefault();
     console.log("edit-btnclicked");
-    
     // updatedProduct();
     editFeature();
-
+   
+ document.getElementById("edit-form")?.classList.toggle("hidden");
+document.getElementById("productTable")?.classList.toggle("hidden");
   })

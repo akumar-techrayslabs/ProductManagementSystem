@@ -68,10 +68,13 @@ window.deleteProduct = deleteProduct;
 let products = JSON.parse(localStorage.getItem("products") || "[]");
 let varieties = JSON.parse(localStorage.getItem("varieties") || "[]");
 let categories = JSON.parse(localStorage.getItem("categories") || "[]");
+const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
 function getCombinedProducts() {
     const combined = [];
     products.forEach((product) => {
         const category = categories.find((c) => c.id === product.category_id);
+        const warehouse_name = warehouses.find((war) => war.id == product.warehouse_id);
+        console.log("warehouse_name", warehouse_name);
         const productVariants = varieties.filter((v) => v.product_id === product.id);
         // for now it is not working but later one when I will fixed the issue with the id I can change it
         if (productVariants.length === 0) {
@@ -80,6 +83,7 @@ function getCombinedProducts() {
                 product_name: product.name,
                 product_sku: product.sku,
                 is_active: product.is_active,
+                warehouse_name: warehouse_name.name,
                 category_name: category ? category.name : "N/A",
             });
         }
@@ -93,6 +97,7 @@ function getCombinedProducts() {
                 variant_name: variant.product_variant_name,
                 variant_sku: variant.sku,
                 price: variant.price,
+                warehouse_name: warehouse_name.name,
                 quantity: 0,
                 reserved_quantity: 0,
             });
@@ -122,7 +127,7 @@ function renderTable() {
       <td class="py-3 px-4 ">${product.variant_name ?? "-"}</td>
       <td class="py-3 px-4 ">${product.variant_sku ?? "-"}</td>
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
-      <td class="py-3 px-4 ">${product.price ?? "-"}</td>
+      <td class="py-3 px-4 ">${product.warehouse_name}</td>
       <td class="py-3 px-4 text-green-500">${product.is_active ?? "-"}</td>
       <td class="py-3 px-4 ">${getCurrentStock(product.product_id, 1)}</td>
    
@@ -163,6 +168,22 @@ function loadCategoriesForDropdown(selectedCategoryId = null) {
     `;
     });
 }
+function loadWarehousesForDropdown(selectedWarehouseId = null) {
+    const warehouses = JSON.parse(localStorage.getItem("warehouses") || "[]");
+    const select = document.getElementById("warehouse_id");
+    select.innerHTML = `<option value="">Select Warehouse</option>`;
+    warehouses.forEach((warehouse) => {
+        const isSelected = selectedWarehouseId !== null &&
+            warehouse.id === selectedWarehouseId
+            ? "selected"
+            : "";
+        select.innerHTML += `
+      <option value="${warehouse.id}" ${isSelected}>
+        ${warehouse.name}
+      </option>
+    `;
+    });
+}
 renderTable();
 let editingProductId = null;
 function editProduct(id) {
@@ -184,6 +205,7 @@ function editProduct(id) {
     //   (document.getElementById("product-category") as HTMLSelectElement).value =
     //     product.category_id ? String(product.category_id) : "";
     loadCategoriesForDropdown(product?.category_id);
+    loadWarehousesForDropdown(product?.warehouse_id);
     //   (document.getElementById("product-category") as HTMLSelectElement).value =
     //     product.category_id ? String(product.category_id) : "";
     if (variant) {
@@ -204,7 +226,8 @@ function updatedProduct() {
         name: document.getElementById("product-name").value,
         sku: document.getElementById("product-sku").value,
         category_id: Number(document.getElementById("product-category").value) || null,
-        reorder_level: 0, organization_id: 1,
+        reorder_level: 0,
+        warehouse_id: Number(document.getElementById("warehouse_id").value),
         is_active: true
     };
     const variantId = varieties.find(v => v.product_id == editingProductId);
@@ -224,8 +247,8 @@ function updatedProduct() {
         : v);
     localStorage.setItem("products", JSON.stringify(products));
     localStorage.setItem("varieties", JSON.stringify(varieties));
-    document.getElementById("edit-form")?.classList.add("hidden");
-    document.getElementById("productTable")?.classList.remove("hidden");
+    document.getElementById("edit-form")?.classList.toggle("hidden");
+    document.getElementById("productTable")?.classList.toggle("hidden");
     editingProductId = null;
     renderTable();
     Swal.fire({
@@ -243,5 +266,7 @@ btn?.addEventListener("click", (e) => {
     console.log("edit-btnclicked");
     // updatedProduct();
     editFeature();
+    document.getElementById("edit-form")?.classList.toggle("hidden");
+    document.getElementById("productTable")?.classList.toggle("hidden");
 });
 //# sourceMappingURL=productList.js.map
