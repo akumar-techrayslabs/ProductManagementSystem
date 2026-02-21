@@ -81,6 +81,7 @@ function getCombinedProducts() {
                 product_id: product.id,
                 product_name: product.name,
                 product_sku: product.sku,
+                warehouse_id: product.warehouse_id,
                 is_active: product.is_active,
                 warehouse_name: warehouse_name,
                 category_name: category ? category.name : "N/A",
@@ -93,6 +94,7 @@ function getCombinedProducts() {
                 product_sku: product.sku,
                 category_name: category ? category.name : "N/A",
                 is_active: product.is_active,
+                warehouse_id: product.warehouse_id,
                 variant_name: variant.product_variant_name,
                 variant_sku: variant.sku,
                 price: variant.price,
@@ -128,7 +130,7 @@ function renderTable() {
       <td class="py-3 px-4 ">${product.price ?? "-"}</td>
       <td class="py-3 px-4 ">${product.warehouse_name}</td>
       <td class="py-3 px-4 text-green-500">${product.is_active ?? "-"}</td>
-      <td class="py-3 px-4 ">${Math.max(getCurrentStock(product.product_id, 1), 0)}</td>
+      <td class="py-3 px-4 ">${Math.max(getCurrentStock(product.product_id, product.warehouse_id || 0), 0)}</td>
    
 
       
