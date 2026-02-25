@@ -7,7 +7,7 @@
   },
   "type": "module",
   "scripts": {
-    "build:css": "@tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --minify",
+    "build:css": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --minify",
     "build:ts": "tsc",
     "build": "npm run build:css && npm run build:ts",
     "dev": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./src/styles/output.css --watch"
