@@ -3,13 +3,13 @@
   "compilerOptions": {
     // File Layout
     "rootDir": "./src/scripts/src",
-    "outDir": "./dist",
+    "outDir": "./src/scripts/dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "esnext",
+    "module": "es6",
     "target": "es2020",
-    "types": [],
+    // "types": [],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

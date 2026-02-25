@@ -46,8 +46,11 @@ addItemsForm.addEventListener("submit", (e) => {
         return;
     }
     const total = qty * price;
+    const prod = products.find((p) => p.id == product_id);
+    const warehouse_id = prod.warehouse_id;
     const item = {
         id: itemId++,
+        warehouse_id,
         product_id,
         quantity: qty,
         unit_price: price,
@@ -88,7 +91,7 @@ saveBtn.addEventListener("click", (e) => {
         return;
     }
     const customer_id = Number(document.getElementById("customer_id").value);
-    const warehouse_id = 1; // change later if dynamic
+    // const warehouse_id = 1; // change later if dynamic
     const status_id = 1;
     const created_by = 1;
     if (!customer_id) {
@@ -98,17 +101,18 @@ saveBtn.addEventListener("click", (e) => {
     const grandTotal = Number(grandTotalEl.textContent);
     let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
     for (let item of items) {
-        const currentStock = getCurrentStock(item.product_id, warehouse_id);
-        // if (Number(currentStock) < Number(item.quantity)) {
-        //   showWarning("Insufficient stock for selected product!");
-        //   return;     }
+        const product = products.find((p) => p.id == item.product_id);
+        const currentStock = getCurrentStock(item.product_id, product.warehouse_id);
+        if (Number(currentStock) < Number(item.quantity)) {
+            showWarning("Insufficient stock for selected product!");
+            return;
+        }
     }
     if (editingCustomerId) {
         const index = customerOrders.findIndex((order) => order.id === editingCustomerId);
         customerOrders[index] = {
-            ...customerOrders[index],
+            id: editingCustomerId,
             customer_id,
-            warehouse_id,
             status_id,
             created_by,
             total_amount: grandTotal,
@@ -120,7 +124,6 @@ saveBtn.addEventListener("click", (e) => {
         const newOrder = {
             id: Date.now(),
             customer_id,
-            warehouse_id,
             status_id,
             total_amount: grandTotal,
             created_by,
@@ -128,7 +131,10 @@ saveBtn.addEventListener("click", (e) => {
         };
         customerOrders.push(newOrder);
         items.forEach((item) => {
-            addStockEntry(item.product_id, warehouse_id, 2, // OUT movement
+            const product = products.find((p) => p.id === item.product_id);
+            if (!product)
+                return;
+            addStockEntry(item.product_id, product.warehouse_id, 2, // OUT movement
             item.quantity);
         });
     }
@@ -237,10 +243,14 @@ window.deleteCustomerOrder = function (id) {
             }
             else {
                 let customerOrders = JSON.parse(localStorage.getItem("customerOrders") || "[]");
+                const order = customerOrders.find(order => order.id == id);
                 customerOrders = customerOrders.filter((order) => order.id !== id);
                 //   const orderId = products.find((pr)=)
-                items.forEach((item) => {
-                    addStockEntry(item.product_id, 1, 1, // in  movement
+                order?.items.forEach((item) => {
+                    const product = products.find((p) => p.id === item.product_id);
+                    if (!product)
+                        return;
+                    addStockEntry(item.product_id, product.warehouse_id, 1, // in  movement
                     item.quantity);
                 });
                 localStorage.setItem("customerOrders", JSON.stringify(customerOrders));

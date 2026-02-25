@@ -4,7 +4,6 @@ import { addStockEntry, getCurrentStock } from "./stockManagement.js";
 interface CustomerOrder {
   id: number;
   customer_id: number;
-  warehouse_id: number;
   status_id: number;
   total_amount: number;
   created_by: number;
@@ -13,6 +12,7 @@ interface CustomerOrder {
 
 interface CustomerOrderItem {
   id: number;
+  warehouse_id: number;
   product_id: number;
   quantity: number;
   unit_price: number;
@@ -92,9 +92,12 @@ addItemsForm.addEventListener("submit", (e) => {
   }
 
   const total = qty * price;
+  const prod = products.find((p:any)=>p.id == product_id)
 
+  const warehouse_id = prod.warehouse_id
   const item: CustomerOrderItem = {
     id: itemId++,
+    warehouse_id,
     product_id,
     quantity: qty,
     unit_price: price,
@@ -149,7 +152,7 @@ saveBtn.addEventListener("click", (e) => {
   );
 
 
-  const warehouse_id = 1; // change later if dynamic
+  // const warehouse_id = 1; // change later if dynamic
   const status_id = 1;
   const created_by = 1;
 
@@ -170,12 +173,13 @@ saveBtn.addEventListener("click", (e) => {
 
 
   for (let item of items) {
-    const currentStock = getCurrentStock(item.product_id, warehouse_id);
+    const product = products.find((p:any) => p.id == item.product_id)
+    const currentStock = getCurrentStock(item.product_id, product.warehouse_id);
 
 
-    // if (Number(currentStock) < Number(item.quantity)) {
-    //   showWarning("Insufficient stock for selected product!");
-    //   return;     }
+    if (Number(currentStock) < Number(item.quantity)) {
+      showWarning("Insufficient stock for selected product!");
+      return;     }
   }
 
 
@@ -186,9 +190,8 @@ saveBtn.addEventListener("click", (e) => {
 
 
     customerOrders[index] = {
-      ...customerOrders[index],
+      id:editingCustomerId,
       customer_id,
-      warehouse_id,
       status_id,
       created_by,
       total_amount: grandTotal,
@@ -205,7 +208,6 @@ saveBtn.addEventListener("click", (e) => {
     const newOrder: CustomerOrder = {
       id: Date.now(),
       customer_id,
-      warehouse_id,
       status_id,
       total_amount: grandTotal,
       created_by,
@@ -219,9 +221,11 @@ saveBtn.addEventListener("click", (e) => {
 
 
     items.forEach((item) => {
+        const product = products.find((p:any)=>p.id === item.product_id);
+        if(!product) return ;
       addStockEntry(
         item.product_id,
-        warehouse_id,
+        product.warehouse_id,
         2, // OUT movement
         item.quantity
       );
@@ -368,13 +372,16 @@ function renderCustomerOrders() {
         let customerOrders: CustomerOrder[] = JSON.parse(
           localStorage.getItem("customerOrders") || "[]",
         );
+        const order = customerOrders.find(order => order.id == id);
 
         customerOrders = customerOrders.filter((order) => order.id !== id);
         //   const orderId = products.find((pr)=)
-        items.forEach((item) => {
+        order?.items.forEach((item) => {
+          const product = products.find((p:any) => p.id === item.product_id)
+          if(!product) return ;
           addStockEntry(
             item.product_id,
-            1,
+            product.warehouse_id,
             1, // in  movement
             item.quantity,
           );
